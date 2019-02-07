@@ -1,3 +1,40 @@
 <resources>
-    <string name="app_name">ListDetail</string>
+    <string name="app_name">SimpleApp</string>
+
+    <string name="fragment_load_loading_images">Chargement des images ..</string>
+    <string name="fragment_load_skip">Passer</string>
+
+    <string name="fragment_main_title">GoT Characters</string>
+    <string name="fragment_main_menu_search">Rechercher</string>
+    <string name="fragment_main_menu_mode">Mode d\'affichage</string>
+    <string name="fragment_main_menu_restore">Restaurer</string>
+    <string name="fragment_main_menu_clear">Vider</string>
+
+    <string name="fragment_main_filter_title">Rechercher et filtrer</string>
+    <string name="fragment_main_filter_search">Rechercher</string>
+    <string name="fragment_main_filter_house">Maison</string>
+    <string name="fragment_main_filter_other">Autre</string>
+    <string name="fragment_main_filter_valid">Valider</string>
+
+    <string name="fragment_character_menu_share">Partager</string>
+
+    <string name="fragment_character_gender_man">homme</string>
+    <string name="fragment_character_gender_woman">femme</string>
+    <string name="fragment_character_alive_man">vivant</string>
+    <string name="fragment_character_alive_woman">vivante</string>
+    <string name="fragment_character_dead_man">mort</string>
+    <string name="fragment_character_dead_woman">morte</string>
+
+    <string name="fragment_house_tab_infos">Infos</string>
+    <string name="fragment_house_tab_characters">Personnages</string>
+    <string name="fragment_house_tab_region">Region</string>
+    <string name="fragment_house_wrecked">éteinte</string>
+    <string name="fragment_house_capital">Siège : %s</string>
+    <string name="fragment_house_devise">Devise : %s</string>
+    <string name="fragment_house_proverb">Dicton : %s</string>
+
+    <string name="popup_share">Partager : %s</string>
+    <string name="popup_loading">Loading ..</string>
+
+    <string name="need_connexion">Une connexion internet est néccessaire</string>
 </resources>

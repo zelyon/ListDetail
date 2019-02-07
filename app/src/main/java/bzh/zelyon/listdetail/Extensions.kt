@@ -1,23 +1,90 @@
 package bzh.zelyon.listdetail
 
+import android.Manifest
 import android.content.Context
+import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.PorterDuff
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Build
 import android.support.annotation.ColorRes
 import android.support.annotation.DrawableRes
 import android.support.v4.content.ContextCompat
+import android.support.v4.content.FileProvider
 import android.support.v4.graphics.ColorUtils
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.widget.ImageView
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
+import io.reactivex.Observable
+import io.reactivex.Observer
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
+import java.io.File
+import java.io.FileOutputStream
+import bzh.zelyon.listdetail.models.Character
 
 internal fun isNougat(): Boolean {
 
     return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+}
+
+internal fun List<Character>.share(mainActivity: MainActivity) {
+
+    mainActivity.checkPermissions(Runnable {
+
+        val names = ArrayList<String>()
+        val uris = ArrayList<Uri>()
+
+        Observable.fromIterable(ArrayList<Character>(this))
+            .subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.io())
+            .subscribe(object : Observer<Character> {
+
+                override fun onSubscribe(d: Disposable) {}
+
+                override fun onNext(character: Character) {
+
+                    names.add(character.name)
+
+                    val file = File(mainActivity.externalCacheDir, Uri.parse(character.image).lastPathSegment)
+
+                    if(!file.exists()) {
+
+                        Picasso.get().load(character.image).get().compress(Bitmap.CompressFormat.PNG, 100, FileOutputStream(file))
+                    }
+
+                    if(isNougat()) {
+
+                        uris.add(FileProvider.getUriForFile(mainActivity.applicationContext, mainActivity.applicationContext.packageName, file))
+                    }
+                    else {
+
+                        uris.add(Uri.fromFile(file))
+                    }
+                }
+
+                override fun onError(e: Throwable) {}
+
+                override fun onComplete() {
+
+                    mainActivity.startActivity(
+                        Intent.createChooser(
+                            Intent()
+                                .setAction(Intent.ACTION_SEND_MULTIPLE)
+                                .putExtra(Intent.EXTRA_TEXT, names.joinToString(separator = "\n"))
+                                .putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris)
+                                .setType("image/png")
+                                .setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION),
+                            mainActivity.getString(R.string.popup_share, "")
+                        )
+                    )
+                }
+            })
+    }, Manifest.permission.WRITE_EXTERNAL_STORAGE)
 }
 
 internal fun RecyclerView.init(nbColumns: Int = 1) {
