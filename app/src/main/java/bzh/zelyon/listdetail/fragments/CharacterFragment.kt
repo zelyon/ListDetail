@@ -46,13 +46,13 @@ class CharacterFragment: AbsToolBarFragment() {
 
         arguments?.let {
 
-            character = DB.getCharacterById(it.getLong(ID))
+            character = DB.getCharacterDao().getById(it.getLong(ID))
             placeholder = BitmapDrawable(mainActivity.resources, it.getParcelable(PLACEHOLDER) as Bitmap)
         }
 
         character.house?.let {
 
-            house = DB.getHouseById(it)
+            house = DB.getHouseDao().getById(it)
         }
     }
 
@@ -60,9 +60,9 @@ class CharacterFragment: AbsToolBarFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         image.transitionName = character.id.toString()
-        image.setImageUrl(character.image, placeholder)
+        image.setImageUrl(character.getPicture(), placeholder)
 
-        description.visibility = if (character.description != null) View.VISIBLE else View.GONE
+        description.visibility = if (character.description.isNotBlank()) View.VISIBLE else View.GONE
         description.text = character.description
 
         gender_icon.setImageResource(if (character.man) R.drawable.ic_male else R.drawable.ic_female)
@@ -78,7 +78,7 @@ class CharacterFragment: AbsToolBarFragment() {
             house_layout.visibility = View.VISIBLE
 
             house_icon.transitionName = it.id.toString()
-            house_icon.setImageUrl(it.thumbnail)
+            house_icon.setImageUrl(it.getThumbnail())
 
             house_label.text = it.label
         }
