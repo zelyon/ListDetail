@@ -13,8 +13,6 @@ import android.preference.PreferenceManager
 import android.support.v7.widget.AppCompatImageView
 import android.support.v7.widget.AppCompatTextView
 import android.transition.TransitionInflater
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewAnimationUtils
 import bzh.zelyon.listdetail.*
@@ -31,9 +29,9 @@ class MainFragment: AbsToolBarFragment() {
     companion object {
 
         const val LIST = "LIST"
-        const val SEARCH_APPLY_SAVE = "SEARCH_APPLY_SAVE  "
-        const val HOUSES_APPLY_SAVE = "HOUSES_APPLY_SAVE  "
-        const val OTHERS_APPLY_SAVE = "OTHERS_APPLY_SAVE "
+        const val SEARCH_APPLY_SAVE = "SEARCH_APPLY_SAVE"
+        const val HOUSES_APPLY_SAVE = "HOUSES_APPLY_SAVE"
+        const val OTHERS_APPLY_SAVE = "OTHERS_APPLY_SAVE"
     }
 
     private lateinit var sharedPreferences: SharedPreferences
@@ -44,11 +42,7 @@ class MainFragment: AbsToolBarFragment() {
     private var housesApply: ArrayList<Long> = ArrayList()
     private var othersApply: ArrayList<String> = ArrayList()
 
-    private lateinit var otherItems: ArrayList<FilterView.Item<String>>
-
     private lateinit var characterAdapter: CharacterAdapter
-
-    private var menuMode: MenuItem? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,12 +54,6 @@ class MainFragment: AbsToolBarFragment() {
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mainActivity)
         modeList = sharedPreferences.getBoolean(LIST, true)
-
-        otherItems = ArrayList()
-        otherItems.add(FilterView.Item(Character.GENDER_MALE, getString(R.string.fragment_character_gender_man), mainActivity.drawableResToDrawable(R.drawable.ic_male, R.color.black)))
-        otherItems.add(FilterView.Item(Character.GENDER_FEMALE, getString(R.string.fragment_character_gender_woman), mainActivity.drawableResToDrawable( R.drawable.ic_female, R.color.black)))
-        otherItems.add(FilterView.Item(Character.ALIVE, getString(R.string.fragment_character_alive_man), mainActivity.drawableResToDrawable(R.drawable.ic_alive, R.color.black)))
-        otherItems.add(FilterView.Item(Character.DEAD, getString(R.string.fragment_character_dead_man), mainActivity.drawableResToDrawable(R.drawable.ic_dead, R.color.black)))
 
         if (savedInstanceState != null) {
 
@@ -135,6 +123,13 @@ class MainFragment: AbsToolBarFragment() {
 
         search_view.setQuery(searchApply, false)
 
+        val otherItems = arrayListOf(
+            FilterView.Item(Character.GENDER_MALE, getString(R.string.fragment_character_gender_man), mainActivity.drawableResToDrawable(R.drawable.ic_male, R.color.black)),
+            FilterView.Item(Character.GENDER_FEMALE, getString(R.string.fragment_character_gender_woman), mainActivity.drawableResToDrawable( R.drawable.ic_female, R.color.black)),
+            FilterView.Item(Character.ALIVE, getString(R.string.fragment_character_alive_man), mainActivity.drawableResToDrawable(R.drawable.ic_alive, R.color.black)),
+            FilterView.Item(Character.DEAD, getString(R.string.fragment_character_dead_man), mainActivity.drawableResToDrawable(R.drawable.ic_dead, R.color.black))
+        )
+
         (other_filter_view as FilterView<String>).load(otherItems, othersApply)
 
         loadCharacters()
@@ -142,7 +137,7 @@ class MainFragment: AbsToolBarFragment() {
         loadHouses()
     }
 
-    override fun getLayoutId(): Int = R.layout.fragment_main
+    override fun getLayoutId() = R.layout.fragment_main
 
     override fun onIdClick(id: Int) {
 
@@ -184,20 +179,15 @@ class MainFragment: AbsToolBarFragment() {
         }
     }
 
-    override fun getTitle(): String = getString(R.string.fragment_main_title)
+    override fun getTitle() = getString(R.string.fragment_main_title)
 
-    override fun showBack(): Boolean = false
+    override fun showBack() = false
 
-    override fun getIdMenu(): Int = R.menu.main
+    override fun getIdMenu() = R.menu.main
 
-    override fun onMenuCreated(menu: Menu?) {
+    override fun onMenuCreated() {
 
-        menu?.let {
-
-            menuMode = it.findItem(R.id.mode)
-        }
-
-        menuMode?.setIcon(if (modeList) R.drawable.ic_module else R.drawable.ic_list)
+        menu?.findItem(R.id.mode)?.setIcon(if (modeList) R.drawable.ic_module else R.drawable.ic_list)
     }
 
     fun loadCharacters() {
@@ -296,8 +286,7 @@ class MainFragment: AbsToolBarFragment() {
                     }
                 }
 
-                override fun onBitmapFailed(e: Exception, errorDrawable: Drawable?) {
-                }
+                override fun onBitmapFailed(e: Exception, errorDrawable: Drawable?) {}
 
                 override fun onPrepareLoad(placeHolderDrawable: Drawable) {}
             })
@@ -369,7 +358,7 @@ class MainFragment: AbsToolBarFragment() {
 
                 val image= itemView.findViewById<AppCompatImageView>(R.id.image)
 
-                mainActivity.setFragment(CharacterFragment.newInstance(character.id, image.drawable as BitmapDrawable), image)
+                mainActivity.setFragment(CharacterFragment.newInstance(character.id, (image.drawable as BitmapDrawable).bitmap), image)
             }
             else {
 

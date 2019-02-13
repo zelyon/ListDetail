@@ -21,12 +21,12 @@ class CharacterFragment: AbsToolBarFragment() {
         const val ID  = "ID"
         const val PLACEHOLDER  = "PLACEHOLDER"
 
-        fun newInstance(id: Long, placeholder: BitmapDrawable) =
+        fun newInstance(id: Long, placeholder: Bitmap) =
 
             CharacterFragment().apply {
                 arguments = Bundle().apply {
                     putLong(ID, id)
-                    putParcelable(PLACEHOLDER, placeholder.bitmap)
+                    putParcelable(PLACEHOLDER, placeholder)
                 }
             }
     }
@@ -84,7 +84,7 @@ class CharacterFragment: AbsToolBarFragment() {
         }
     }
 
-    override fun getLayoutId(): Int = R.layout.fragment_character
+    override fun getLayoutId() = R.layout.fragment_character
 
     override fun onIdClick(id: Int) {
 
@@ -99,17 +99,17 @@ class CharacterFragment: AbsToolBarFragment() {
 
                 house?.let {
 
-                    mainActivity.setFragment(HouseFragment.newInstance(it.id, house_icon.drawable as BitmapDrawable), house_icon)
+                    mainActivity.setFragment(HouseFragment.newInstance(it.id, (house_icon.drawable as BitmapDrawable).bitmap), house_icon)
                 }
             }
         }
     }
 
-    override fun getTitle(): String = character.name
+    override fun getTitle() = character.name
 
-    override fun showBack(): Boolean = true
+    override fun showBack() = true
 
-    override fun getIdMenu(): Int = R.menu.character
+    override fun getIdMenu() = R.menu.character
 
-    override fun onMenuCreated(menu: Menu?) { }
+    override fun onMenuCreated() { }
 }

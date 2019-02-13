@@ -36,13 +36,13 @@ class HouseFragment: AbsToolBarFragment() {
         const val ID  = "ID"
         const val PLACEHOLDER  = "PLACEHOLDER"
 
-        fun newInstance(id: Long, placeholder: BitmapDrawable) =
+        fun newInstance(id: Long, placeholder: Bitmap) =
 
             HouseFragment().apply {
 
                 arguments = Bundle().apply {
                     putLong(ID, id)
-                    putParcelable(PLACEHOLDER, placeholder.bitmap)
+                    putParcelable(PLACEHOLDER, placeholder)
                 }
             }
     }
@@ -76,7 +76,7 @@ class HouseFragment: AbsToolBarFragment() {
         tab_layout.setupWithViewPager(view_pager)
     }
 
-    override fun getLayoutId(): Int = R.layout.fragment_house
+    override fun getLayoutId()= R.layout.fragment_house
 
     override fun onIdClick(id: Int) {
 
@@ -89,13 +89,13 @@ class HouseFragment: AbsToolBarFragment() {
         }
     }
 
-    override fun getTitle(): String = house.label
+    override fun getTitle() = house.label
 
-    override fun showBack(): Boolean = true
+    override fun showBack() = true
 
-    override fun getIdMenu(): Int = R.menu.character
+    override fun getIdMenu() = R.menu.character
 
-    override fun onMenuCreated(menu: Menu?) {}
+    override fun onMenuCreated() {}
 
     private val pagerAdapter = object : PagerAdapter() {
 
@@ -217,7 +217,7 @@ class HouseFragment: AbsToolBarFragment() {
 
             val image = itemView.findViewById<AppCompatImageView>(R.id.image)
 
-            mainActivity.setFragment(CharacterFragment.newInstance(character.id, image.drawable as BitmapDrawable), image)
+            mainActivity.setFragment(CharacterFragment.newInstance(character.id, (image.drawable as BitmapDrawable).bitmap), image)
         }
 
         override fun onItemLongClick(itemView: View, datas: List<Character>, position: Int) {}
