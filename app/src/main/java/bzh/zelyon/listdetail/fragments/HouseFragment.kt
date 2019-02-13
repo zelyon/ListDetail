@@ -12,7 +12,6 @@ import android.support.v7.widget.AppCompatTextView
 import android.support.v7.widget.RecyclerView
 import android.transition.TransitionInflater
 import android.view.Gravity
-import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout

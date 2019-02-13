@@ -4,7 +4,6 @@ import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.view.Menu
 import android.view.View
 import bzh.zelyon.listdetail.R
 import bzh.zelyon.listdetail.models.Character
@@ -18,8 +17,8 @@ class CharacterFragment: AbsToolBarFragment() {
 
     companion object {
 
-        const val ID  = "ID"
-        const val PLACEHOLDER  = "PLACEHOLDER"
+        const val ID = "ID"
+        const val PLACEHOLDER = "PLACEHOLDER"
 
         fun newInstance(id: Long, placeholder: Bitmap) =
 
