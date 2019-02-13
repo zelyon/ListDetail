@@ -26,7 +26,7 @@ class LoadFragment: AbsFragment() {
         progress_bar.progress = 0
     }
 
-    override fun getLayoutId(): Int = R.layout.fragment_load
+    override fun getLayoutId() = R.layout.fragment_load
 
     override fun onIdClick(id: Int) {
 
@@ -41,9 +41,9 @@ class LoadFragment: AbsFragment() {
 
     fun loadImages() {
 
-        val characters = DB.getCharacters()
-        val houses = DB.getHouses()
-        val regions = DB.getRegions()
+        val characters = DB.getCharacterDao().getAll()
+        val houses  = DB.getHouseDao().getAll()
+        val regions = DB.getRegionDao().getAll()
 
         if(characters.isNotEmpty() && houses.isNotEmpty() && regions.isNotEmpty()) {
 
@@ -56,19 +56,19 @@ class LoadFragment: AbsFragment() {
 
             for(character in characters) {
 
-                imagesUrlsMandatory.add(character.thumbnail)
-                imagesUrls.add(character.image)
+                imagesUrlsMandatory.add(character.getThumbnail())
+                imagesUrls.add(character.getPicture())
             }
 
             for(house in houses) {
 
-                imagesUrlsMandatory.add(house.thumbnail)
-                imagesUrls.add(house.blason)
+                imagesUrlsMandatory.add(house.getThumbnail())
+                imagesUrls.add(house.getImage())
             }
 
             for(region in regions) {
 
-                imagesUrls.add(region.image)
+                imagesUrls.add(region.getMap())
             }
 
             progress_bar.max = imagesUrlsMandatory.size

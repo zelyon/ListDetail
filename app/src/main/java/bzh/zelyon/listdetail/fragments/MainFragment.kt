@@ -13,8 +13,6 @@ import android.preference.PreferenceManager
 import android.support.v7.widget.AppCompatImageView
 import android.support.v7.widget.AppCompatTextView
 import android.transition.TransitionInflater
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewAnimationUtils
 import bzh.zelyon.listdetail.*
@@ -31,9 +29,9 @@ class MainFragment: AbsToolBarFragment() {
     companion object {
 
         const val LIST = "LIST"
-        const val SEARCH_APPLY_SAVE = "SEARCH_APPLY_SAVE  "
-        const val HOUSES_APPLY_SAVE = "HOUSES_APPLY_SAVE  "
-        const val OTHERS_APPLY_SAVE = "OTHERS_APPLY_SAVE "
+        const val SEARCH_APPLY_SAVE = "SEARCH_APPLY_SAVE"
+        const val HOUSES_APPLY_SAVE = "HOUSES_APPLY_SAVE"
+        const val OTHERS_APPLY_SAVE = "OTHERS_APPLY_SAVE"
     }
 
     private lateinit var sharedPreferences: SharedPreferences
@@ -44,11 +42,7 @@ class MainFragment: AbsToolBarFragment() {
     private var housesApply: ArrayList<Long> = ArrayList()
     private var othersApply: ArrayList<String> = ArrayList()
 
-    private lateinit var otherItems: ArrayList<FilterView.Item<String>>
-
     private lateinit var characterAdapter: CharacterAdapter
-
-    private var menuMode: MenuItem? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,12 +54,6 @@ class MainFragment: AbsToolBarFragment() {
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(mainActivity)
         modeList = sharedPreferences.getBoolean(LIST, true)
-
-        otherItems = ArrayList()
-        otherItems.add(FilterView.Item(Character.GENDER_MALE, getString(R.string.fragment_character_gender_man), mainActivity.drawableResToDrawable(R.drawable.ic_male, R.color.black)))
-        otherItems.add(FilterView.Item(Character.GENDER_FEMALE, getString(R.string.fragment_character_gender_woman), mainActivity.drawableResToDrawable( R.drawable.ic_female, R.color.black)))
-        otherItems.add(FilterView.Item(Character.ALIVE, getString(R.string.fragment_character_alive_man), mainActivity.drawableResToDrawable(R.drawable.ic_alive, R.color.black)))
-        otherItems.add(FilterView.Item(Character.DEAD, getString(R.string.fragment_character_dead_man), mainActivity.drawableResToDrawable(R.drawable.ic_dead, R.color.black)))
 
         if (savedInstanceState != null) {
 
@@ -135,6 +123,13 @@ class MainFragment: AbsToolBarFragment() {
 
         search_view.setQuery(searchApply, false)
 
+        val otherItems = arrayListOf(
+            FilterView.Item(Character.GENDER_MALE, getString(R.string.fragment_character_gender_man), mainActivity.drawableResToDrawable(R.drawable.ic_male, R.color.black)),
+            FilterView.Item(Character.GENDER_FEMALE, getString(R.string.fragment_character_gender_woman), mainActivity.drawableResToDrawable( R.drawable.ic_female, R.color.black)),
+            FilterView.Item(Character.ALIVE, getString(R.string.fragment_character_alive_man), mainActivity.drawableResToDrawable(R.drawable.ic_alive, R.color.black)),
+            FilterView.Item(Character.DEAD, getString(R.string.fragment_character_dead_man), mainActivity.drawableResToDrawable(R.drawable.ic_dead, R.color.black))
+        )
+
         (other_filter_view as FilterView<String>).load(otherItems, othersApply)
 
         loadCharacters()
@@ -142,7 +137,7 @@ class MainFragment: AbsToolBarFragment() {
         loadHouses()
     }
 
-    override fun getLayoutId(): Int = R.layout.fragment_main
+    override fun getLayoutId() = R.layout.fragment_main
 
     override fun onIdClick(id: Int) {
 
@@ -184,35 +179,102 @@ class MainFragment: AbsToolBarFragment() {
         }
     }
 
-    override fun getTitle(): String = getString(R.string.fragment_main_title)
+    override fun getTitle() = getString(R.string.fragment_main_title)
 
-    override fun showBack(): Boolean = false
+    override fun showBack() = false
 
-    override fun getIdMenu(): Int = R.menu.main
+    override fun getIdMenu() = R.menu.main
 
-    override fun onMenuCreated(menu: Menu?) {
+    override fun onMenuCreated() {
 
-        menu?.let {
-
-            menuMode = it.findItem(R.id.mode)
-        }
-
-        menuMode?.setIcon(if (modeList) R.drawable.ic_module else R.drawable.ic_list)
+        menu?.findItem(R.id.mode)?.setIcon(if (modeList) R.drawable.ic_module else R.drawable.ic_list)
     }
 
     fun loadCharacters() {
 
-        characterAdapter.datas = DB.getCharactersByFilters(searchApply, housesApply.toTypedArray(), othersApply.toTypedArray())
+        lateinit var characters: List<Character>
+
+        var man = othersApply.contains(Character.GENDER_MALE)
+        var female = othersApply.contains(Character.GENDER_FEMALE)
+        var dead = othersApply.contains(Character.DEAD)
+        var alive = othersApply.contains(Character.ALIVE)
+
+        if(searchApply.isNotBlank() && housesApply.isNotEmpty() && man != female && dead != alive) {
+
+            characters = DB.getCharacterDao().getByNameAndHouseAndGenderAndStatus(searchApply, housesApply, man, dead)
+        }
+        else if(searchApply.isNotBlank() && housesApply.isNotEmpty() && man != female && dead == alive) {
+
+            characters = DB.getCharacterDao().getByNameAndHouseAndGender(searchApply, housesApply, man)
+        }
+        else if(searchApply.isNotBlank() && housesApply.isNotEmpty() && man == female && dead != alive) {
+
+            characters = DB.getCharacterDao().getByNameAndHouseAndStatus(searchApply, housesApply, dead)
+        }
+        else if(searchApply.isNotBlank() && housesApply.isNotEmpty() && man == female && dead == alive) {
+
+            characters = DB.getCharacterDao().getByNameAndHouse(searchApply, housesApply)
+        }
+        else if(searchApply.isNotBlank() && housesApply.isEmpty() && man != female && dead != alive) {
+
+            characters = DB.getCharacterDao().getByNameAndGenderAndStatus(searchApply, man, dead)
+        }
+        else if(searchApply.isNotBlank() && housesApply.isEmpty() && man != female && dead == alive) {
+
+            characters = DB.getCharacterDao().getByNameAndGender(searchApply, man)
+        }
+        else if(searchApply.isNotBlank() && housesApply.isEmpty() && man == female && dead != alive) {
+
+            characters = DB.getCharacterDao().getByNameAndStatus(searchApply, dead)
+        }
+        else if(searchApply.isNotBlank() && housesApply.isEmpty() && man == female && dead == alive) {
+
+            characters = DB.getCharacterDao().getByName(searchApply)
+        }
+        else if(searchApply.isBlank() && housesApply.isNotEmpty() && man != female && dead != alive) {
+
+            characters = DB.getCharacterDao().getByHouseAndGenderAndStatus(housesApply, man, dead)
+        }
+        else if(searchApply.isBlank() && housesApply.isNotEmpty() && man != female && dead == alive) {
+
+            characters = DB.getCharacterDao().getByHouseAndGender(housesApply, man)
+        }
+        else if(searchApply.isBlank() && housesApply.isNotEmpty() && man == female && dead != alive) {
+
+            characters = DB.getCharacterDao().getByHouseAndStatus(housesApply, dead)
+        }
+        else if(searchApply.isBlank() && housesApply.isNotEmpty() && man == female && dead == alive) {
+
+            characters = DB.getCharacterDao().getByHouse(housesApply)
+        }
+        else if(searchApply.isBlank() && housesApply.isEmpty() && man != female && dead != alive) {
+
+            characters = DB.getCharacterDao().getByGenderAndStatus(man, dead)
+        }
+        else if(searchApply.isBlank() && housesApply.isEmpty() && man != female && dead == alive) {
+
+            characters = DB.getCharacterDao().getByGender(man)
+        }
+        else if(searchApply.isBlank() && housesApply.isEmpty() && man == female && dead != alive) {
+
+            characters = DB.getCharacterDao().getByStatus(dead)
+        }
+        else {
+
+            characters = DB.getCharacterDao().getAll()
+        }
+
+        characterAdapter.datas = characters
     }
 
     fun loadHouses() {
 
-        val houses= DB.getHouses()
+        val houses= DB.getHouseDao().getAll()
         val items = ArrayList<FilterView.Item<Long>>()
 
         for (house in houses) {
 
-            Picasso.get().load(house.thumbnail).placeholder(GradientDrawable()).into(object : Target {
+            Picasso.get().load(house.getThumbnail()).placeholder(GradientDrawable()).into(object : Target {
 
                 override fun onBitmapLoaded(bitmap: Bitmap, from: Picasso.LoadedFrom) {
 
@@ -224,8 +286,7 @@ class MainFragment: AbsToolBarFragment() {
                     }
                 }
 
-                override fun onBitmapFailed(e: Exception, errorDrawable: Drawable) {
-                }
+                override fun onBitmapFailed(e: Exception, errorDrawable: Drawable?) {}
 
                 override fun onPrepareLoad(placeHolderDrawable: Drawable) {}
             })
@@ -279,7 +340,7 @@ class MainFragment: AbsToolBarFragment() {
             image.scaleX = if (!modeList && characterIsSelected) .8f else 1f
             image.scaleY = if (!modeList && characterIsSelected) .8f else 1f
             image.transitionName = character.id.toString()
-            image.setImageUrl(character.thumbnail)
+            image.setImageUrl(character.getThumbnail())
 
             val badge = itemView.findViewById<AppCompatImageView>(R.id.badge)
             badge.visibility = if (modeList && characterIsSelected || !modeList && !selectedCharacters.isEmpty()) View.VISIBLE else View.GONE
@@ -297,7 +358,7 @@ class MainFragment: AbsToolBarFragment() {
 
                 val image= itemView.findViewById<AppCompatImageView>(R.id.image)
 
-                mainActivity.setFragment(CharacterFragment.newInstance(character.id, image.drawable as BitmapDrawable), image)
+                mainActivity.setFragment(CharacterFragment.newInstance(character.id, (image.drawable as BitmapDrawable).bitmap), image)
             }
             else {
 
@@ -325,7 +386,7 @@ class MainFragment: AbsToolBarFragment() {
 
             if (modeList) {
 
-                showActionMode(!selectedCharacters.isEmpty())
+                showActionMode(selectedCharacters.isNotEmpty())
             }
             else {
 
@@ -335,7 +396,7 @@ class MainFragment: AbsToolBarFragment() {
                 val scale= if (characterIsSelected) .8f else 1f
                 image.animate().scaleY(scale).scaleX(scale).setDuration(200L).withEndAction {
 
-                    showActionMode(!selectedCharacters.isEmpty())
+                    showActionMode(selectedCharacters.isNotEmpty())
                 }
             }
         }

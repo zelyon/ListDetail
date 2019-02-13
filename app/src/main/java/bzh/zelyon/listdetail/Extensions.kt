@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.graphics.PorterDuff
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Build
 import android.support.annotation.ColorRes
@@ -17,6 +18,7 @@ import android.support.v4.graphics.ColorUtils
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.widget.ImageView
+import bzh.zelyon.listdetail.models.Character
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import io.reactivex.Observable
@@ -25,7 +27,6 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import java.io.File
 import java.io.FileOutputStream
-import bzh.zelyon.listdetail.models.Character
 
 internal fun isNougat(): Boolean {
 
@@ -50,11 +51,11 @@ internal fun List<Character>.share(mainActivity: MainActivity) {
 
                     names.add(character.name)
 
-                    val file = File(mainActivity.externalCacheDir, Uri.parse(character.image).lastPathSegment)
+                    val file = File(mainActivity.externalCacheDir, Uri.parse(character.getPicture()).lastPathSegment)
 
                     if(!file.exists()) {
 
-                        Picasso.get().load(character.image).get().compress(Bitmap.CompressFormat.PNG, 100, FileOutputStream(file))
+                        Picasso.get().load(character.getPicture()).placeholder(GradientDrawable()).get().compress(Bitmap.CompressFormat.PNG, 100, FileOutputStream(file))
                     }
 
                     if(isNougat()) {

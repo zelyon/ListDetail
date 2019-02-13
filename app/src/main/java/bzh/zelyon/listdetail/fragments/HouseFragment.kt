@@ -36,13 +36,13 @@ class HouseFragment: AbsToolBarFragment() {
         const val ID  = "ID"
         const val PLACEHOLDER  = "PLACEHOLDER"
 
-        fun newInstance(id: Long, placeholder: BitmapDrawable) =
+        fun newInstance(id: Long, placeholder: Bitmap) =
 
             HouseFragment().apply {
 
                 arguments = Bundle().apply {
                     putLong(ID, id)
-                    putParcelable(PLACEHOLDER, placeholder.bitmap)
+                    putParcelable(PLACEHOLDER, placeholder)
                 }
             }
     }
@@ -57,18 +57,18 @@ class HouseFragment: AbsToolBarFragment() {
 
         arguments?.let {
 
-            house = DB.getHouseById(it.getLong(ID))
+            house = DB.getHouseDao().getById(it.getLong(ID))
             placeholder = BitmapDrawable(mainActivity.resources, it.getParcelable(PLACEHOLDER) as Bitmap)
         }
 
-        region = DB.getRegionById(house.region)
+        region = DB.getRegionDao().getById(house.region)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         image.transitionName = house.id.toString()
-        image.setImageUrl(house.blason, placeholder)
+        image.setImageUrl(house.getImage(), placeholder)
 
         view_pager.adapter = pagerAdapter
         view_pager.offscreenPageLimit = Integer.MAX_VALUE
@@ -76,7 +76,7 @@ class HouseFragment: AbsToolBarFragment() {
         tab_layout.setupWithViewPager(view_pager)
     }
 
-    override fun getLayoutId(): Int = R.layout.fragment_house
+    override fun getLayoutId()= R.layout.fragment_house
 
     override fun onIdClick(id: Int) {
 
@@ -84,18 +84,18 @@ class HouseFragment: AbsToolBarFragment() {
 
             R.id.share -> {
 
-                DB.getCharactersByFilters(null, arrayOf(house.id), null).share(mainActivity)
+                DB.getCharacterDao().getByHouse(arrayListOf(house.id)).share(mainActivity)
             }
         }
     }
 
-    override fun getTitle(): String = house.label
+    override fun getTitle() = house.label
 
-    override fun showBack(): Boolean = true
+    override fun showBack() = true
 
-    override fun getIdMenu(): Int = R.menu.character
+    override fun getIdMenu() = R.menu.character
 
-    override fun onMenuCreated(menu: Menu?) {}
+    override fun onMenuCreated() {}
 
     private val pagerAdapter = object : PagerAdapter() {
 
@@ -145,13 +145,13 @@ class HouseFragment: AbsToolBarFragment() {
                     val city = AppCompatTextView(mainActivity)
                     city.text = getString(R.string.fragment_house_capital, house.city)
                     city.setTextColor(mainActivity.colorResToColorInt(R.color.white))
-                    city.visibility = if (house.city != null) View.VISIBLE else View.GONE
+                    city.visibility = if (house.city.isNotBlank()) View.VISIBLE else View.GONE
                     linearLayout.addView(city, ViewParams(mainActivity).margins(8).linear())
 
                     val devise = AppCompatTextView(mainActivity)
                     devise.text = getString(R.string.fragment_house_devise, house.devise)
                     devise.setTextColor(mainActivity.colorResToColorInt(R.color.white))
-                    devise.visibility = if (house.devise != null) View.VISIBLE else View.GONE
+                    devise.visibility = if (house.devise.isNotBlank()) View.VISIBLE else View.GONE
                     linearLayout.addView(devise, ViewParams(mainActivity).margins(8).linear())
 
                     val proverb = AppCompatTextView(mainActivity)
@@ -163,7 +163,8 @@ class HouseFragment: AbsToolBarFragment() {
                 1 -> {
 
                     val characterAdapter = CharacterAdapter(mainActivity, R.layout.item_module)
-                    characterAdapter.datas = DB.getCharactersByFilters(null, arrayOf(house.id), null)
+
+                    characterAdapter.datas = DB.getCharacterDao().getByHouse(arrayListOf(house.id))
                     val recyclerView = RecyclerView(mainActivity)
                     recyclerView.init(3)
                     recyclerView.adapter = characterAdapter
@@ -180,7 +181,7 @@ class HouseFragment: AbsToolBarFragment() {
                     linearLayout.addView(regionName, ViewParams(mainActivity).margins(8).centerGravity().linear())
 
                     val map = AppCompatImageView(mainActivity)
-                    map.setImageUrl(region.image)
+                    map.setImageUrl(region.getMap())
                     linearLayout.addView(map, ViewParams(mainActivity, ViewParams.MATCH, ViewParams.MATCH).linear())
                 }
             }
@@ -199,7 +200,7 @@ class HouseFragment: AbsToolBarFragment() {
 
             val image = itemView.findViewById<AppCompatImageView>(R.id.image)
             image.transitionName = character.id.toString()
-            image.setImageUrl(character.thumbnail)
+            image.setImageUrl(character.getThumbnail())
 
             val badge = itemView.findViewById<AppCompatImageView>(R.id.badge)
             badge.visibility = if (character.id.equals(house.lord)) View.VISIBLE else View.GONE
@@ -216,7 +217,7 @@ class HouseFragment: AbsToolBarFragment() {
 
             val image = itemView.findViewById<AppCompatImageView>(R.id.image)
 
-            mainActivity.setFragment(CharacterFragment.newInstance(character.id, image.drawable as BitmapDrawable), image)
+            mainActivity.setFragment(CharacterFragment.newInstance(character.id, (image.drawable as BitmapDrawable).bitmap), image)
         }
 
         override fun onItemLongClick(itemView: View, datas: List<Character>, position: Int) {}

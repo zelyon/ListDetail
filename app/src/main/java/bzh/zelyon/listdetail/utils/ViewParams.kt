@@ -26,7 +26,7 @@ class ViewParams (val context: Context, private var width: Int = MATCH, private 
 
     private var topMargin = 0
     private var bottomMargin = 0
-    private  var leftMargin = 0
+    private var leftMargin = 0
     private var rightMargin = 0
 
     init {

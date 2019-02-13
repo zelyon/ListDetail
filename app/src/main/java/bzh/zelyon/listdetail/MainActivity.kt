@@ -33,7 +33,9 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_main)
 
-        val needLoadData= DB.getCharacters().isEmpty() || DB.getCharacters().isEmpty() || DB.getRegions().isEmpty()
+        DB.init(this)
+
+        val needLoadData= DB.getCharacterDao().getAll().isEmpty() || DB.getHouseDao().getAll().isEmpty() || DB.getRegionDao().getAll().isEmpty()
 
         ConnectionLiveData(this).observe(this, Observer { isOnline ->
             isOnline?.let {
@@ -130,7 +132,7 @@ class MainActivity : AppCompatActivity() {
 
             override fun onResult(result: List<Character>) {
 
-                DB.saveCharacters(result)
+                DB.getCharacterDao().insert(result)
 
                 if (fragmentDisplayed is LoadFragment) {
 
@@ -152,7 +154,7 @@ class MainActivity : AppCompatActivity() {
 
             override fun onResult(result: List<House>) {
 
-                DB.saveHouses(result)
+                DB.getHouseDao().insert(result)
 
                 if (fragmentDisplayed is LoadFragment) {
 
@@ -174,7 +176,7 @@ class MainActivity : AppCompatActivity() {
 
             override fun onResult(result: List<Region>) {
 
-                DB.saveRegions(result)
+                DB.getRegionDao().insert(result)
 
                 if (fragmentDisplayed is LoadFragment) {
 

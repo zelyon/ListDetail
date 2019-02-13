@@ -1,31 +1,34 @@
 package bzh.zelyon.listdetail.models
 
-import android.arch.persistence.room.PrimaryKey
+import android.arch.persistence.room.*
 import bzh.zelyon.listdetail.BuildConfig
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import io.realm.RealmObject
-import io.realm.annotations.RealmClass
 
-@RealmClass
-open class Region: RealmObject(){
+@Entity(tableName = "region")
+data class Region(
+    @PrimaryKey @ColumnInfo(name = "id") @SerializedName("id") @Expose var id: Long = 0,
+    @ColumnInfo(name = "label") @SerializedName("label") @Expose var label: String = "",
+    @ColumnInfo(name = "image")@SerializedName("image") @Expose var image: String = ""
+){
+
+    fun getMap() = BuildConfig.baseUrl + Region.URL + "map/" + image
 
     companion object {
 
         const val URL = "api/got/region/"
     }
 
-    @PrimaryKey
-    @SerializedName("id")
-    @Expose
-    var id: Long = 0
+    @android.arch.persistence.room.Dao
+    interface Dao {
 
-    @SerializedName("label")
-    @Expose
-    var label: String = ""
+        @Insert(onConflict = OnConflictStrategy.REPLACE)
+        fun insert(regions: List<Region>)
 
-    @SerializedName("image")
-    @Expose
-    var image: String = ""
-        get() = BuildConfig.baseUrl + URL + "map/" + field
+        @Query("SELECT * FROM region")
+        fun getAll(): List<Region>
+
+        @Query("SELECT * FROM region WHERE id = :id LIMIT 1")
+        fun getById(id: Long) : Region
+    }
 }

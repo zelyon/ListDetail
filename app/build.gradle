@@ -6,8 +6,6 @@ apply plugin: 'kotlin-android-extensions'
 
 apply plugin: 'kotlin-kapt'
 
-apply plugin: 'realm-android'
-
 android {
     compileSdkVersion 28
     defaultConfig {
@@ -58,6 +56,8 @@ dependencies {
     implementation "android.arch.lifecycle:livedata:$arch_version"
     implementation "android.arch.lifecycle:viewmodel:$arch_version"
     implementation "android.arch.persistence.room:runtime:$arch_version"
+    kapt  "android.arch.persistence.room:compiler:$arch_version"
+    implementation "android.arch.persistence.room:rxjava2:$arch_version"
 
     api "org.jetbrains.kotlinx:kotlinx-coroutines-core:$arch_version"
     api "org.jetbrains.kotlinx:kotlinx-coroutines-android:$arch_version"

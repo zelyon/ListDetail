@@ -1,14 +1,23 @@
 package bzh.zelyon.listdetail.models
 
-import android.arch.persistence.room.PrimaryKey
+import android.arch.persistence.room.*
 import bzh.zelyon.listdetail.BuildConfig
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import io.realm.RealmObject
-import io.realm.annotations.RealmClass
 
-@RealmClass
-open class Character: RealmObject() {
+@Entity(tableName = "character")
+data class Character(
+    @PrimaryKey @ColumnInfo(name = "id") @SerializedName("id") @Expose var id: Long = 0,
+    @ColumnInfo(name = "house") @SerializedName("house") @Expose var house: Long? = null,
+    @ColumnInfo(name = "name") @SerializedName("name") @Expose var name: String = "",
+    @ColumnInfo(name = "description") @SerializedName("description") @Expose var description: String = "",
+    @ColumnInfo(name = "dead") @SerializedName("dead") @Expose var dead: Boolean = false,
+    @ColumnInfo(name = "man") @SerializedName("man") @Expose var man: Boolean = false,
+    @ColumnInfo(name = "image") @SerializedName("image") @Expose var image: String = ""
+) {
+
+    fun getPicture() = BuildConfig.baseUrl + URL + "image/" + image
+    fun getThumbnail() = BuildConfig.baseUrl + URL + "thumbnail/" + image
 
     companion object {
 
@@ -19,36 +28,61 @@ open class Character: RealmObject() {
         const val ALIVE = "ALIVE"
     }
 
-    @PrimaryKey
-    @SerializedName("id")
-    @Expose
-    var id: Long = 0
+    @android.arch.persistence.room.Dao
+    interface Dao {
 
-    @SerializedName("house")
-    @Expose
-    var house: Long? = null
+        @Insert(onConflict = OnConflictStrategy.REPLACE)
+        fun insert(characters: List<Character>)
 
-    @SerializedName("name")
-    @Expose
-    var name: String = ""
+        @Query("SELECT * FROM character")
+        fun getAll(): List<Character>
 
-    @SerializedName("description")
-    @Expose
-    var description: String? = null
+        @Query("SELECT * FROM character WHERE id = :id LIMIT 1")
+        fun getById(id: Long) : Character
 
-    @SerializedName("dead")
-    @Expose
-    var dead: Boolean = false
+        @Query("SELECT * FROM character WHERE name LIKE '%' || :name || '%'")
+        fun getByName(name: String) : List<Character>
 
-    @SerializedName("man")
-    @Expose
-    var man: Boolean = false
+        @Query("SELECT * FROM character WHERE house IN (:houses)")
+        fun getByHouse(houses: List<Long>) : List<Character>
 
-    @SerializedName("image")
-    @Expose
-    var image: String = ""
-        get() = BuildConfig.baseUrl + URL + "image/" + field
+        @Query("SELECT * FROM character WHERE dead = :dead")
+        fun getByStatus(dead: Boolean) : List<Character>
 
-    var thumbnail: String = ""
-        get() = image.replace("image", "thumbnail")
+        @Query("SELECT * FROM character WHERE man = :man")
+        fun getByGender(man: Boolean) : List<Character>
+
+        @Query("SELECT * FROM character WHERE name LIKE '%' || :name || '%' AND house IN (:houses)")
+        fun getByNameAndHouse(name: String, houses: List<Long>) : List<Character>
+
+        @Query("SELECT * FROM character WHERE name LIKE '%' || :name || '%' AND man = :man")
+        fun getByNameAndGender(name: String, man: Boolean) : List<Character>
+
+        @Query("SELECT * FROM character WHERE name LIKE '%' || :name || '%' AND dead = :dead")
+        fun getByNameAndStatus(name: String, dead: Boolean) : List<Character>
+
+        @Query("SELECT * FROM character WHERE house IN (:houses) AND man = :man")
+        fun getByHouseAndGender(houses: List<Long>, man: Boolean) : List<Character>
+
+        @Query("SELECT * FROM character WHERE house IN (:houses) AND dead = :dead")
+        fun getByHouseAndStatus(houses: List<Long>, dead: Boolean) : List<Character>
+
+        @Query("SELECT * FROM character WHERE  man = :man AND dead = :dead")
+        fun getByGenderAndStatus(man: Boolean, dead: Boolean) : List<Character>
+
+        @Query("SELECT * FROM character WHERE name LIKE '%' || :name || '%' AND house IN (:houses) AND man = :man")
+        fun getByNameAndHouseAndGender(name: String, houses: List<Long>, man: Boolean) : List<Character>
+
+        @Query("SELECT * FROM character WHERE name LIKE '%' || :name || '%' AND house IN (:houses) AND dead = :dead")
+        fun getByNameAndHouseAndStatus(name: String, houses: List<Long>, dead: Boolean) : List<Character>
+
+        @Query("SELECT * FROM character WHERE name LIKE '%' || :name || '%' AND man = :man AND dead = :dead")
+        fun getByNameAndGenderAndStatus(name: String, man: Boolean, dead: Boolean) : List<Character>
+
+        @Query("SELECT * FROM character WHERE house IN (:houses) AND man = :man AND dead = :dead")
+        fun getByHouseAndGenderAndStatus(houses: List<Long>, man: Boolean, dead: Boolean) : List<Character>
+
+        @Query("SELECT * FROM character WHERE name LIKE '%' || :name || '%' AND house IN (:houses) AND man = :man AND dead = :dead")
+        fun getByNameAndHouseAndGenderAndStatus(name: String, houses: List<Long>, man: Boolean, dead: Boolean) : List<Character>
+    }
 }
