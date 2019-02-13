@@ -26,7 +26,7 @@ class LoadFragment: AbsFragment() {
         progress_bar.progress = 0
     }
 
-    override fun getLayoutId(): Int = R.layout.fragment_load
+    override fun getLayoutId() = R.layout.fragment_load
 
     override fun onIdClick(id: Int) {
 

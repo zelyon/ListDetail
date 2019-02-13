@@ -9,6 +9,8 @@ import bzh.zelyon.listdetail.R
 
 abstract class AbsToolBarFragment: AbsFragment() {
 
+    var menu:Menu? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -28,7 +30,9 @@ abstract class AbsToolBarFragment: AbsFragment() {
 
         inflater.inflate(getIdMenu(), menu)
 
-        onMenuCreated(menu)
+        this.menu = menu
+
+        onMenuCreated()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -51,5 +55,5 @@ abstract class AbsToolBarFragment: AbsFragment() {
 
     abstract fun getIdMenu(): Int
 
-    abstract fun onMenuCreated(menu: Menu? = null)
+    abstract fun onMenuCreated()
 }
