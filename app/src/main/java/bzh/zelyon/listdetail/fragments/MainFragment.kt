@@ -20,6 +20,7 @@ import bzh.zelyon.listdetail.models.Character
 import bzh.zelyon.listdetail.utils.Adapter
 import bzh.zelyon.listdetail.utils.DB
 import bzh.zelyon.listdetail.views.FilterView
+import bzh.zelyon.listdetail.views.FilterView.Item
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.Target
 import kotlinx.android.synthetic.main.fragment_main.*
@@ -124,10 +125,10 @@ class MainFragment: AbsToolBarFragment() {
         search_view.setQuery(searchApply, false)
 
         val otherItems = arrayListOf(
-            FilterView.Item(Character.GENDER_MALE, getString(R.string.fragment_character_gender_man), mainActivity.drawableResToDrawable(R.drawable.ic_male, R.color.black)),
-            FilterView.Item(Character.GENDER_FEMALE, getString(R.string.fragment_character_gender_woman), mainActivity.drawableResToDrawable( R.drawable.ic_female, R.color.black)),
-            FilterView.Item(Character.ALIVE, getString(R.string.fragment_character_alive_man), mainActivity.drawableResToDrawable(R.drawable.ic_alive, R.color.black)),
-            FilterView.Item(Character.DEAD, getString(R.string.fragment_character_dead_man), mainActivity.drawableResToDrawable(R.drawable.ic_dead, R.color.black))
+            Item(Character.GENDER_MALE, getString(R.string.fragment_character_gender_man), mainActivity.drawableResToDrawable(R.drawable.ic_male, R.color.black)),
+            Item(Character.GENDER_FEMALE, getString(R.string.fragment_character_gender_woman), mainActivity.drawableResToDrawable( R.drawable.ic_female, R.color.black)),
+            Item(Character.ALIVE, getString(R.string.fragment_character_alive_man), mainActivity.drawableResToDrawable(R.drawable.ic_alive, R.color.black)),
+            Item(Character.DEAD, getString(R.string.fragment_character_dead_man), mainActivity.drawableResToDrawable(R.drawable.ic_dead, R.color.black))
         )
 
         (other_filter_view as FilterView<String>).load(otherItems, othersApply)
@@ -194,10 +195,10 @@ class MainFragment: AbsToolBarFragment() {
 
         lateinit var characters: List<Character>
 
-        var man = othersApply.contains(Character.GENDER_MALE)
-        var female = othersApply.contains(Character.GENDER_FEMALE)
-        var dead = othersApply.contains(Character.DEAD)
-        var alive = othersApply.contains(Character.ALIVE)
+        val man = othersApply.contains(Character.GENDER_MALE)
+        val female = othersApply.contains(Character.GENDER_FEMALE)
+        val dead = othersApply.contains(Character.DEAD)
+        val alive = othersApply.contains(Character.ALIVE)
 
         if(searchApply.isNotBlank() && housesApply.isNotEmpty() && man != female && dead != alive) {
 
@@ -278,7 +279,7 @@ class MainFragment: AbsToolBarFragment() {
 
                 override fun onBitmapLoaded(bitmap: Bitmap, from: Picasso.LoadedFrom) {
 
-                    items.add(FilterView.Item(house.id, house.label, BitmapDrawable(resources, bitmap)))
+                    items.add(Item(house.id, house.label, BitmapDrawable(resources, bitmap)))
 
                     if (items.size == houses.size) {
 

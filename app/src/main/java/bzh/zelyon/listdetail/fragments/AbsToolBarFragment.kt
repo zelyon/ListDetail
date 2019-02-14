@@ -9,7 +9,7 @@ import bzh.zelyon.listdetail.R
 
 abstract class AbsToolBarFragment: AbsFragment() {
 
-    var menu:Menu? = null
+    var menu: Menu? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

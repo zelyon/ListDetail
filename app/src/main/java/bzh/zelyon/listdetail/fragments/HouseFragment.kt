@@ -26,10 +26,6 @@ import kotlinx.android.synthetic.main.fragment_house.*
 
 class HouseFragment: AbsToolBarFragment() {
 
-    lateinit var house: House
-    lateinit var region: Region
-    lateinit var placeholder: Drawable
-
     companion object {
 
         const val ID  = "ID"
@@ -38,13 +34,16 @@ class HouseFragment: AbsToolBarFragment() {
         fun newInstance(id: Long, placeholder: Bitmap) =
 
             HouseFragment().apply {
-
                 arguments = Bundle().apply {
                     putLong(ID, id)
                     putParcelable(PLACEHOLDER, placeholder)
                 }
             }
     }
+
+    lateinit var house: House
+    lateinit var region: Region
+    lateinit var placeholder: Drawable
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -101,13 +101,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun setFragment(baseFragment: Fragment, view: View? = null) {
+    fun setFragment(fragment: Fragment, view: View? = null) {
 
-        val fragmentTransaction = supportFragmentManager.beginTransaction().replace(R.id.content, baseFragment)
+        val fragmentTransaction = supportFragmentManager.beginTransaction().replace(R.id.content, fragment)
 
-        if(fragmentDisplayed != null) {
+        fragmentDisplayed?.let {
 
-            fragmentTransaction.addToBackStack(baseFragment::class.java.simpleName)
+            fragmentTransaction.addToBackStack(fragment::class.java.simpleName)
         }
 
         view?.let {

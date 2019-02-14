@@ -13,26 +13,26 @@ abstract class DB: RoomDatabase() {
 
     companion object {
 
+        private lateinit var db: DB
+
         fun init(context: Context) {
 
-            INSTANCE = Room.databaseBuilder(context, DB::class.java, "listdetail").allowMainThreadQueries().build()
+            db = Room.databaseBuilder(context, DB::class.java, "listdetail").allowMainThreadQueries().build()
         }
-
-        private lateinit var INSTANCE: DB
 
         fun getCharacterDao(): Character.Dao {
 
-            return INSTANCE.characterDao()
+            return db.characterDao()
         }
 
         fun getHouseDao(): House.Dao {
 
-            return INSTANCE.houseDao()
+            return db.houseDao()
         }
 
         fun getRegionDao(): Region.Dao {
 
-            return INSTANCE.regionDao()
+            return db.regionDao()
         }
     }
 
