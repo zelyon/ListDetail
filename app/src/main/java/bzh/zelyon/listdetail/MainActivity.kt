@@ -60,23 +60,20 @@ class MainActivity : AppCompatActivity() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
-        if(permissionRunnable != null) {
+        var allGranted = true
 
-            var allGranted = true
+        for (grantResult in grantResults) {
 
-            for (grantResult in grantResults) {
+            if (grantResult != PackageManager.PERMISSION_GRANTED) {
 
-                if (grantResult != PackageManager.PERMISSION_GRANTED) {
-
-                    allGranted = false
-                }
+                allGranted = false
             }
+        }
 
-            if(allGranted) {
+        if(allGranted) {
 
-                permissionRunnable?.run()
-                permissionRunnable = null
-            }
+            permissionRunnable?.run()
+            permissionRunnable = null
         }
     }
 
