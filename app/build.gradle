@@ -44,29 +44,47 @@ kotlin {
 dependencies {
     implementation 'com.android.support:multidex:1.0.2'
 
+    //Support
     implementation "com.android.support:appcompat-v7:$support_version"
     implementation "com.android.support:recyclerview-v7:$support_version"
     implementation "com.android.support:cardview-v7:$support_version"
     implementation "com.android.support:design:$support_version"
-
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
 
+    //Kotlin
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    //Life cycle
     implementation "android.arch.lifecycle:runtime:$arch_version"
     implementation "android.arch.lifecycle:extensions:$arch_version"
     implementation "android.arch.lifecycle:livedata:$arch_version"
     implementation "android.arch.lifecycle:viewmodel:$arch_version"
+
+    //Room
+//    implementation "androidx.room:room-runtime:$room_version"
+//    kapt "androidx.room:room-compiler:$room_version"
+//    implementation "androidx.room:room-rxjava2:$room_version"
+//    implementation "androidx.room:room-coroutines:$room_version"
     implementation "android.arch.persistence.room:runtime:$arch_version"
     kapt  "android.arch.persistence.room:compiler:$arch_version"
     implementation "android.arch.persistence.room:rxjava2:$arch_version"
 
-    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:$arch_version"
-    api "org.jetbrains.kotlinx:kotlinx-coroutines-android:$arch_version"
+    //Coroutines
+//    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$arch_version"
+//    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$arch_version"
+//    implementation "org.jetbrains.kotlinx:kotlin-coroutines-rx:$arch_version"
 
+    //Rx
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
+    implementation 'io.reactivex.rxjava2:rxkotlin:2.3.0'
+
+    //Okio
     implementation 'com.squareup.okio:okio:2.1.0'
     implementation('com.squareup.okhttp3:okhttp:3.11.0') {
         exclude module: 'com.squareup.okio'
     }
 
+    //Retrofit
     implementation("com.squareup.retrofit2:retrofit:$retrofit2_version") {
         exclude module: 'com.squareup.okio'
     }
@@ -79,9 +97,4 @@ dependencies {
 
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'com.google.code.gson:gson:2.8.5'
-
-    implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
-    implementation 'io.reactivex.rxjava2:rxkotlin:2.3.0'
-
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
