@@ -28,10 +28,7 @@ import io.reactivex.schedulers.Schedulers
 import java.io.File
 import java.io.FileOutputStream
 
-internal fun isNougat(): Boolean {
-
-    return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
-}
+internal val isNougat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
 
 internal fun List<Character>.share(mainActivity: MainActivity) {
 
@@ -50,20 +47,14 @@ internal fun List<Character>.share(mainActivity: MainActivity) {
                 override fun onNext(character: Character) {
 
                     names.add(character.name)
-
                     val file = File(mainActivity.externalCacheDir, Uri.parse(character.getPicture()).lastPathSegment)
-
-                    if(!file.exists()) {
-
+                    if (!file.exists()) {
                         Picasso.get().load(character.getPicture()).placeholder(GradientDrawable()).get().compress(Bitmap.CompressFormat.PNG, 100, FileOutputStream(file))
                     }
-
-                    if(isNougat()) {
-
+                    if (isNougat) {
                         uris.add(FileProvider.getUriForFile(mainActivity.applicationContext, mainActivity.applicationContext.packageName, file))
                     }
                     else {
-
                         uris.add(Uri.fromFile(file))
                     }
                 }
@@ -89,65 +80,44 @@ internal fun List<Character>.share(mainActivity: MainActivity) {
 }
 
 internal fun RecyclerView.init(nbColumns: Int = 1) {
-
     setHasFixedSize(false)
     isNestedScrollingEnabled = false
     layoutManager = GridLayoutManager(context, nbColumns)
 }
 
 internal fun ImageView.setImageUrl(url: String, placeholder: Drawable? = null) {
-
     var requestCreator = Picasso.get().load(url)
-
     placeholder?.let {
-
         requestCreator = requestCreator.placeholder(placeholder)
     }
-
     requestCreator.into(this)
 }
 
 internal fun String.loadImageUrl(runnable: Runnable? = null) {
-
     Picasso.get().load(this).fetch(object : Callback {
-
         override fun onSuccess() {
-
             runnable?.run()
         }
-
         override fun onError(e: Exception) {
-
             runnable?.run()
         }
     })
 }
 
-internal fun Context.dpToPixel(int: Int): Int {
-
-    return (int * this.resources.displayMetrics.density).toInt()
-}
+internal fun Context.dpToPixel(int: Int) = (int * this.resources.displayMetrics.density).toInt()
 
 internal fun Context.drawableResToDrawable(@DrawableRes drawableRes: Int, @ColorRes colorRes: Int? = null): Drawable {
-
     val result = ContextCompat.getDrawable(this, drawableRes) ?: ColorDrawable()
-
     colorRes?.let {
-
         result.mutate().setColorFilter(this.colorResToColorInt(colorRes), PorterDuff.Mode.SRC_IN)
     }
-
     return result
 }
 
 internal fun Context.colorResToColorInt(@ColorRes colorRes: Int, alpha: Float? = null): Int {
-
     var result = ContextCompat.getColor(this, colorRes)
-
     alpha?.let {
-
         result = ColorUtils.setAlphaComponent(result, 255*alpha.toInt())
     }
-
     return result
 }

@@ -13,12 +13,10 @@ abstract class AbsFragment: Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         mainActivity = activity as MainActivity
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-
         return inflater.inflate(getLayoutId(), container, false)
     }
 
@@ -31,14 +29,11 @@ abstract class AbsFragment: Fragment() {
     private fun integrateOnClick(view: View) {
 
         if (view.isClickable && !view.hasOnClickListeners()) {
-
             view.setOnClickListener { onIdClick(it.id) }
         }
 
         if (view is ViewGroup) {
-
             for (i in 0 until view.childCount) {
-
                 integrateOnClick(view.getChildAt(i))
             }
         }
@@ -47,12 +42,4 @@ abstract class AbsFragment: Fragment() {
     abstract fun getLayoutId(): Int
 
     abstract fun onIdClick(id: Int)
-
-    fun runOnUiThread(action: Runnable) {
-
-        if(!mainActivity.isFinishing && isAdded) {
-
-            mainActivity.runOnUiThread(action)
-        }
-    }
 }

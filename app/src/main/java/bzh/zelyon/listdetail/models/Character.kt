@@ -20,7 +20,6 @@ data class Character(
     fun getThumbnail() = BuildConfig.baseUrl + URL + "thumbnail/" + image
 
     companion object {
-
         const val URL = "api/got/character/"
         const val GENDER_MALE = "MALE"
         const val GENDER_FEMALE = "FEMALE"

@@ -27,25 +27,18 @@ abstract class AbsToolBarFragment: AbsFragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-
         inflater.inflate(getIdMenu(), menu)
-
         this.menu = menu
-
         onMenuCreated()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-
         if(item.itemId == android.R.id.home) {
-
             mainActivity.supportFragmentManager.popBackStack()
         }
         else {
-
             onIdClick(item.itemId)
         }
-
         return super.onOptionsItemSelected(item)
     }
 

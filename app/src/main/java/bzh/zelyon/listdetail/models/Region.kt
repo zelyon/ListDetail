@@ -9,13 +9,12 @@ import com.google.gson.annotations.SerializedName
 data class Region(
     @PrimaryKey @ColumnInfo(name = "id") @SerializedName("id") @Expose var id: Long = 0,
     @ColumnInfo(name = "label") @SerializedName("label") @Expose var label: String = "",
-    @ColumnInfo(name = "image")@SerializedName("image") @Expose var image: String = ""
+    @ColumnInfo(name = "image") @SerializedName("image") @Expose var image: String = ""
 ){
 
-    fun getMap() = BuildConfig.baseUrl + Region.URL + "map/" + image
+    fun getMap() = BuildConfig.baseUrl + URL + "map/" + image
 
     companion object {
-
         const val URL = "api/got/region/"
     }
 
@@ -29,6 +28,6 @@ data class Region(
         fun getAll(): List<Region>
 
         @Query("SELECT * FROM region WHERE id = :id LIMIT 1")
-        fun getById(id: Long) : Region
+        fun getById(id: Long): Region
     }
 }

@@ -8,46 +8,32 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 
-abstract class Adapter<T>(val context: Context, var idItemLayout: Int): Adapter<ViewHolder>() {
+abstract class Adapter<T> (val context: Context, var idItemLayout: Int): Adapter<ViewHolder>() {
 
-    var datas: List<T> = ArrayList()
+    var items = listOf<T>()
         set(value) {
-
             field = value
-
             notifyDataSetChanged()
         }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = object : RecyclerView.ViewHolder(LayoutInflater.from(context).inflate(idItemLayout, parent, false)) {}
 
-        return object : RecyclerView.ViewHolder(LayoutInflater.from(context).inflate(idItemLayout, parent, false)) {}
-    }
-
-    override fun getItemCount(): Int {
-
-        return datas.size
-    }
+    override fun getItemCount() = items.size
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-
-        onItemFill(viewHolder.itemView, datas, position)
-
+        onItemFill(viewHolder.itemView, items, position)
         viewHolder.itemView.setOnClickListener {
-
-            onItemClick(viewHolder.itemView, datas, position)
+            onItemClick(viewHolder.itemView, items, position)
         }
-
         viewHolder.itemView.setOnLongClickListener {
-
-            onItemLongClick(viewHolder.itemView, datas, position)
-
+            onItemLongClick(viewHolder.itemView, items, position)
             true
         }
     }
 
-    abstract fun onItemFill(itemView: View, datas: List<T>, position: Int)
+    abstract fun onItemFill(itemView: View, items: List<T>, position: Int)
 
-    abstract fun onItemClick(itemView: View, datas: List<T>, position: Int)
+    abstract fun onItemClick(itemView: View, items: List<T>, position: Int)
 
-    abstract fun onItemLongClick(itemView: View, datas: List<T>, position: Int)
+    abstract fun onItemLongClick(itemView: View, items: List<T>, position: Int)
 }

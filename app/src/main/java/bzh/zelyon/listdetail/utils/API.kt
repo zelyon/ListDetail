@@ -27,49 +27,34 @@ interface API {
             .build()
             .create(API::class.java)
 
-        fun getCharacters(callBack : CallBack<List<Character>>) {
-
-            API.getCharacters().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribeWith(object : DisposableSingleObserver<List<Character>>() {
-
+        fun getCharacters(callBack: CallBack<List<Character>>) {
+            API.getCharacters().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribeWith(object: DisposableSingleObserver<List<Character>>() {
                 override fun onSuccess(characters: List<Character>) {
-
                     callBack.onResult(characters)
                 }
-
                 override fun onError(throwable: Throwable) {
-
                     callBack.onFail(throwable)
                 }
             })
         }
 
-        fun getHouses(callBack : CallBack<List<House>>) {
-
-            API.getHouses().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribeWith(object : DisposableSingleObserver<List<House>>() {
-
+        fun getHouses(callBack: CallBack<List<House>>) {
+            API.getHouses().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribeWith(object: DisposableSingleObserver<List<House>>() {
                 override fun onSuccess(houses: List<House>) {
-
                     callBack.onResult(houses)
                 }
-
                 override fun onError(throwable: Throwable) {
-
                     callBack.onFail(throwable)
                 }
             })
         }
 
-        fun getRegions(callBack : CallBack<List<Region>>) {
-
-            API.getRegions().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribeWith(object : DisposableSingleObserver<List<Region>>() {
-
+        fun getRegions(callBack: CallBack<List<Region>>) {
+            API.getRegions().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribeWith(object: DisposableSingleObserver<List<Region>>() {
                 override fun onSuccess(regions: List<Region>) {
-
                     callBack.onResult(regions)
                 }
-
                 override fun onError(throwable: Throwable) {
-
                     callBack.onFail(throwable)
                 }
             })
@@ -77,11 +62,11 @@ interface API {
     }
 
     @GET(Character.URL)
-    fun getCharacters():Single<List<Character>>
+    fun getCharacters(): Single<List<Character>>
 
     @GET(House.URL)
-    fun getHouses():Single<List<House>>
+    fun getHouses(): Single<List<House>>
 
     @GET(Region.URL)
-    fun getRegions():Single<List<Region>>
+    fun getRegions(): Single<List<Region>>
 }

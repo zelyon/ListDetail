@@ -20,20 +20,11 @@ abstract class DB: RoomDatabase() {
             db = Room.databaseBuilder(context, DB::class.java, "listdetail").allowMainThreadQueries().build()
         }
 
-        fun getCharacterDao(): Character.Dao {
+        fun getCharacterDao() = db.characterDao()
 
-            return db.characterDao()
-        }
+        fun getHouseDao() = db.houseDao()
 
-        fun getHouseDao(): House.Dao {
-
-            return db.houseDao()
-        }
-
-        fun getRegionDao(): Region.Dao {
-
-            return db.regionDao()
-        }
+        fun getRegionDao() = db.regionDao()
     }
 
     abstract fun characterDao(): Character.Dao

@@ -19,7 +19,12 @@ class LoadFragment: AbsFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         animatedVectorDrawableCompat = AnimatedVectorDrawableCompat.create(mainActivity, R.drawable.anim_vector_loader)
-        animatedVectorDrawableCompat?.registerAnimationCallback(animationCallback)
+        animatedVectorDrawableCompat?.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
+            override fun onAnimationEnd(drawable: Drawable?) {
+                super.onAnimationEnd(drawable)
+                animatedVectorDrawableCompat?.start()
+            }
+        })
 
         loader.setImageDrawable(animatedVectorDrawableCompat)
 
@@ -29,13 +34,8 @@ class LoadFragment: AbsFragment() {
     override fun getLayoutId() = R.layout.fragment_load
 
     override fun onIdClick(id: Int) {
-
         when(id) {
-
-            R.id.skip -> {
-
-                mainActivity.setFragment(MainFragment())
-            }
+            R.id.skip -> mainActivity.setFragment(MainFragment())
         }
     }
 
@@ -55,20 +55,21 @@ class LoadFragment: AbsFragment() {
             val imagesUrls = ArrayList<String>()
 
             for(character in characters) {
-
                 imagesUrlsMandatory.add(character.getThumbnail())
                 imagesUrls.add(character.getPicture())
             }
 
             for(house in houses) {
-
                 imagesUrlsMandatory.add(house.getThumbnail())
                 imagesUrls.add(house.getImage())
             }
 
             for(region in regions) {
-
                 imagesUrls.add(region.getMap())
+            }
+
+            for(imageUrl in imagesUrls) {
+                imageUrl.loadImageUrl()
             }
 
             progress_bar.max = imagesUrlsMandatory.size
@@ -81,31 +82,16 @@ class LoadFragment: AbsFragment() {
 
                     semaphore.release()
 
-                    runOnUiThread(Runnable {
-
-                        progress_bar.progress++
-
-                        if(semaphore.tryAcquire(imagesUrlsMandatory.size)) {
-
-                            mainActivity.setFragment(MainFragment())
+                    if(isAdded) {
+                        mainActivity.runOnUiThread {
+                            progress_bar.progress++
+                            if(semaphore.tryAcquire(imagesUrlsMandatory.size)) {
+                                mainActivity.setFragment(MainFragment())
+                            }
                         }
-                    })
+                    }
                 })
             }
-
-            for(imageUrl in imagesUrls) {
-
-                imageUrl.loadImageUrl()
-            }
-        }
-    }
-
-    private val animationCallback = object : Animatable2Compat.AnimationCallback() {
-
-        override fun onAnimationEnd(drawable: Drawable?) {
-            super.onAnimationEnd(drawable)
-
-            animatedVectorDrawableCompat?.start()
         }
     }
 }

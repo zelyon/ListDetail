@@ -18,11 +18,10 @@ data class House(
     @ColumnInfo(name = "blason") @SerializedName("blason") @Expose var blason: String = ""
 ) {
 
-    fun getImage() = BuildConfig.baseUrl + House.URL + "image/" + blason
-    fun getThumbnail() = BuildConfig.baseUrl + House.URL + "thumbnail/" + blason
+    fun getImage() = BuildConfig.baseUrl + URL + "image/" + blason
+    fun getThumbnail() = BuildConfig.baseUrl + URL + "thumbnail/" + blason
 
     companion object {
-
         const val URL = "api/got/house/"
     }
 
@@ -36,6 +35,6 @@ data class House(
         fun getAll(): List<House>
 
         @Query("SELECT * FROM house WHERE id = :id LIMIT 1")
-        fun getById(id: Long) : House
+        fun getById(id: Long): House
     }
 }
