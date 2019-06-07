@@ -165,78 +165,25 @@ class MainFragment: AbsToolBarFragment() {
 
     fun loadCharacters() {
 
-        val characters: List<Character>
-
         val man = othersApply.contains(Character.GENDER_MALE)
         val female = othersApply.contains(Character.GENDER_FEMALE)
         val dead = othersApply.contains(Character.DEAD)
         val alive = othersApply.contains(Character.ALIVE)
 
-        if(searchApply.isNotBlank() && housesApply.isNotEmpty() && man != female && dead != alive) {
-            characters = DB.getCharacterDao().getByNameAndHouseAndGenderAndStatus(searchApply, housesApply, man, dead)
-        }
-        else if(searchApply.isNotBlank() && housesApply.isNotEmpty() && man != female && dead == alive) {
-            characters = DB.getCharacterDao().getByNameAndHouseAndGender(searchApply, housesApply, man)
-        }
-        else if(searchApply.isNotBlank() && housesApply.isNotEmpty() && man == female && dead != alive) {
-            characters = DB.getCharacterDao().getByNameAndHouseAndStatus(searchApply, housesApply, dead)
-        }
-        else if(searchApply.isNotBlank() && housesApply.isNotEmpty() && man == female && dead == alive) {
-            characters = DB.getCharacterDao().getByNameAndHouse(searchApply, housesApply)
-        }
-        else if(searchApply.isNotBlank() && housesApply.isEmpty() && man != female && dead != alive) {
-            characters = DB.getCharacterDao().getByNameAndGenderAndStatus(searchApply, man, dead)
-        }
-        else if(searchApply.isNotBlank() && housesApply.isEmpty() && man != female && dead == alive) {
-            characters = DB.getCharacterDao().getByNameAndGender(searchApply, man)
-        }
-        else if(searchApply.isNotBlank() && housesApply.isEmpty() && man == female && dead != alive) {
-            characters = DB.getCharacterDao().getByNameAndStatus(searchApply, dead)
-        }
-        else if(searchApply.isNotBlank() && housesApply.isEmpty() && man == female && dead == alive) {
-            characters = DB.getCharacterDao().getByName(searchApply)
-        }
-        else if(searchApply.isBlank() && housesApply.isNotEmpty() && man != female && dead != alive) {
-            characters = DB.getCharacterDao().getByHouseAndGenderAndStatus(housesApply, man, dead)
-        }
-        else if(searchApply.isBlank() && housesApply.isNotEmpty() && man != female && dead == alive) {
-            characters = DB.getCharacterDao().getByHouseAndGender(housesApply, man)
-        }
-        else if(searchApply.isBlank() && housesApply.isNotEmpty() && man == female && dead != alive) {
-            characters = DB.getCharacterDao().getByHouseAndStatus(housesApply, dead)
-        }
-        else if(searchApply.isBlank() && housesApply.isNotEmpty() && man == female && dead == alive) {
-            characters = DB.getCharacterDao().getByHouse(housesApply)
-        }
-        else if(searchApply.isBlank() && housesApply.isEmpty() && man != female && dead != alive) {
-            characters = DB.getCharacterDao().getByGenderAndStatus(man, dead)
-        }
-        else if(searchApply.isBlank() && housesApply.isEmpty() && man != female && dead == alive) {
-            characters = DB.getCharacterDao().getByGender(man)
-        }
-        else if(searchApply.isBlank() && housesApply.isEmpty() && man == female && dead != alive) {
-            characters = DB.getCharacterDao().getByStatus(dead)
-        }
-        else {
-            characters = DB.getCharacterDao().getAll()
-        }
-        characterAdapter?.items = characters
+        characterAdapter?.items = Character.getByFilters(searchApply, housesApply, if (man != female) man else null, if (dead != alive) dead else null)
     }
 
     fun loadHouses() {
 
-        val houses= DB.getHouseDao().getAll()
         val items= mutableListOf<Item<Long>>()
 
-        for (house in houses) {
+        for (house in DB.getHouseDao().getAll()) {
 
             Picasso.get().load(house.getThumbnail()).placeholder(GradientDrawable()).into(object : Target {
 
                 override fun onBitmapLoaded(bitmap: Bitmap, from: Picasso.LoadedFrom) {
                     items.add(Item(house.id, house.label, BitmapDrawable(resources, bitmap)))
-                    if (items.size == houses.size) {
-                        (house_filter_view as FilterView<Long>).load(items, housesApply)
-                    }
+                    (house_filter_view as FilterView<Long>).load(items, housesApply)
                 }
 
                 override fun onBitmapFailed(e: Exception, errorDrawable: Drawable?) {}
@@ -251,7 +198,6 @@ class MainFragment: AbsToolBarFragment() {
         val radius = Math.sqrt((filter_layout.height * filter_layout.height + filter_layout.height * filter_layout.height).toDouble()).toFloat()
         val circularReveal= ViewAnimationUtils.createCircularReveal(filter_layout, filter_layout.height,0, if (show) 0f else radius, if (show) radius else 0f).setDuration(600)
         circularReveal.addListener(object : AnimatorListenerAdapter() {
-
             override fun onAnimationEnd(animation: Animator) {
                 super.onAnimationEnd(animation)
                 filter_layout.visibility = if (show) View.VISIBLE else View.INVISIBLE
@@ -315,8 +261,7 @@ class MainFragment: AbsToolBarFragment() {
                 showActionMode(selectedCharacters.isNotEmpty())
             }
             else {
-                val characterIsSelected= selectedCharacters.contains(character)
-                val scale= if (characterIsSelected) .8f else 1f
+                val scale= if (selectedCharacters.contains(character)) .8f else 1f
                 itemView.findViewById<AppCompatImageView>(R.id.image).animate().scaleY(scale).scaleX(scale).setDuration(200L).withEndAction {
                     showActionMode(selectedCharacters.isNotEmpty())
                 }

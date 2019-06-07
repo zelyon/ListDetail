@@ -31,10 +31,14 @@ data class House(
         @Insert(onConflict = OnConflictStrategy.REPLACE)
         fun insert(houses: List<House>)
 
-        @Query("SELECT * FROM house")
+        @Query("SELECT * " +
+                "FROM house")
         fun getAll(): List<House>
 
-        @Query("SELECT * FROM house WHERE id = :id LIMIT 1")
+        @Query("SELECT * " +
+                "FROM house " +
+                "WHERE id = :id " +
+                "LIMIT 1")
         fun getById(id: Long): House
     }
 }

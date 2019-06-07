@@ -1,7 +1,10 @@
 package bzh.zelyon.listdetail.models
 
+import android.arch.persistence.db.SimpleSQLiteQuery
+import android.arch.persistence.db.SupportSQLiteQuery
 import android.arch.persistence.room.*
 import bzh.zelyon.listdetail.BuildConfig
+import bzh.zelyon.listdetail.utils.DB
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
@@ -25,6 +28,46 @@ data class Character(
         const val GENDER_FEMALE = "FEMALE"
         const val DEAD = "DEAD"
         const val ALIVE = "ALIVE"
+
+        fun getByFilters(name: String? = null, houses: List<Long>? = null, man: Boolean? = null, dead: Boolean? = null) : List<Character> {
+            var query = "SELECT * FROM character "
+            val args = mutableListOf<String>()
+            val conditions= mutableListOf<String>()
+            if (!name.isNullOrBlank()) {
+                conditions.add("name LIKE '%' || ? || '%' ")
+                args.add(name)
+            }
+            if (!houses.isNullOrEmpty()) {
+                var housesCondition = "house IN ("
+                houses.forEachIndexed { index, house ->
+                    housesCondition += "?"
+                    if (index < houses.size-1) {
+                        housesCondition +=","
+                    }
+                    args.add(house.toString())
+                }
+                housesCondition += ") "
+                conditions.add(housesCondition)
+            }
+            man?.let {
+                conditions.add("man = ? ")
+                args.add(if(it) "1" else "0")
+            }
+            dead?.let {
+                conditions.add("dead = ? ")
+                args.add(if(it) "1" else "0")
+            }
+            if (conditions.isNotEmpty()) {
+                query += "WHERE "
+                conditions.forEachIndexed { index, condition ->
+                    query += condition
+                    if (index < conditions.size-1) {
+                        query +="AND "
+                    }
+                }
+            }
+            return DB.getCharacterDao().getByFilters(SimpleSQLiteQuery(query, args.toTypedArray()))
+        }
     }
 
     @android.arch.persistence.room.Dao
@@ -33,55 +76,17 @@ data class Character(
         @Insert(onConflict = OnConflictStrategy.REPLACE)
         fun insert(characters: List<Character>)
 
-        @Query("SELECT * FROM character")
+        @Query("SELECT * F" +
+                "ROM character")
         fun getAll(): List<Character>
 
-        @Query("SELECT * FROM character WHERE id = :id LIMIT 1")
+        @Query("SELECT * " +
+                "FROM character " +
+                "WHERE id = :id " +
+                "LIMIT 1")
         fun getById(id: Long) : Character
 
-        @Query("SELECT * FROM character WHERE name LIKE '%' || :name || '%'")
-        fun getByName(name: String) : List<Character>
-
-        @Query("SELECT * FROM character WHERE house IN (:houses)")
-        fun getByHouse(houses: List<Long>) : List<Character>
-
-        @Query("SELECT * FROM character WHERE dead = :dead")
-        fun getByStatus(dead: Boolean) : List<Character>
-
-        @Query("SELECT * FROM character WHERE man = :man")
-        fun getByGender(man: Boolean) : List<Character>
-
-        @Query("SELECT * FROM character WHERE name LIKE '%' || :name || '%' AND house IN (:houses)")
-        fun getByNameAndHouse(name: String, houses: List<Long>) : List<Character>
-
-        @Query("SELECT * FROM character WHERE name LIKE '%' || :name || '%' AND man = :man")
-        fun getByNameAndGender(name: String, man: Boolean) : List<Character>
-
-        @Query("SELECT * FROM character WHERE name LIKE '%' || :name || '%' AND dead = :dead")
-        fun getByNameAndStatus(name: String, dead: Boolean) : List<Character>
-
-        @Query("SELECT * FROM character WHERE house IN (:houses) AND man = :man")
-        fun getByHouseAndGender(houses: List<Long>, man: Boolean) : List<Character>
-
-        @Query("SELECT * FROM character WHERE house IN (:houses) AND dead = :dead")
-        fun getByHouseAndStatus(houses: List<Long>, dead: Boolean) : List<Character>
-
-        @Query("SELECT * FROM character WHERE  man = :man AND dead = :dead")
-        fun getByGenderAndStatus(man: Boolean, dead: Boolean) : List<Character>
-
-        @Query("SELECT * FROM character WHERE name LIKE '%' || :name || '%' AND house IN (:houses) AND man = :man")
-        fun getByNameAndHouseAndGender(name: String, houses: List<Long>, man: Boolean) : List<Character>
-
-        @Query("SELECT * FROM character WHERE name LIKE '%' || :name || '%' AND house IN (:houses) AND dead = :dead")
-        fun getByNameAndHouseAndStatus(name: String, houses: List<Long>, dead: Boolean) : List<Character>
-
-        @Query("SELECT * FROM character WHERE name LIKE '%' || :name || '%' AND man = :man AND dead = :dead")
-        fun getByNameAndGenderAndStatus(name: String, man: Boolean, dead: Boolean) : List<Character>
-
-        @Query("SELECT * FROM character WHERE house IN (:houses) AND man = :man AND dead = :dead")
-        fun getByHouseAndGenderAndStatus(houses: List<Long>, man: Boolean, dead: Boolean) : List<Character>
-
-        @Query("SELECT * FROM character WHERE name LIKE '%' || :name || '%' AND house IN (:houses) AND man = :man AND dead = :dead")
-        fun getByNameAndHouseAndGenderAndStatus(name: String, houses: List<Long>, man: Boolean, dead: Boolean) : List<Character>
+        @RawQuery
+        fun getByFilters(supportSQLiteQuery: SupportSQLiteQuery) : List<Character>
     }
 }

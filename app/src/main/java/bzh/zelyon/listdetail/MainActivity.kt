@@ -169,7 +169,7 @@ class MainActivity : AppCompatActivity() {
 
             postValue(connectivityManager.activeNetworkInfo?.isConnected ?: false)
 
-            if (isNougat) {
+            if (isNougat()) {
                 connectivityManager.registerDefaultNetworkCallback(connectivityManagerCallback)
             }
             else {
@@ -183,11 +183,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         private val connectivityManagerCallback = object : ConnectivityManager.NetworkCallback() {
-
             override fun onAvailable(network: Network?) {
                 postValue(true)
             }
-
             override fun onLost(network: Network?) {
                 postValue(false)
             }

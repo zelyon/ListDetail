@@ -16,7 +16,6 @@ abstract class DB: RoomDatabase() {
         private lateinit var db: DB
 
         fun init(context: Context) {
-
             db = Room.databaseBuilder(context, DB::class.java, "listdetail").allowMainThreadQueries().build()
         }
 

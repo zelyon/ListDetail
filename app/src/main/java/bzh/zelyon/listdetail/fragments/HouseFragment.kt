@@ -75,7 +75,7 @@ class HouseFragment: AbsToolBarFragment() {
 
     override fun onIdClick(id: Int) {
         when(id) {
-            R.id.share -> house?.let { DB.getCharacterDao().getByHouse(arrayListOf(it.id)).share(mainActivity) }
+            R.id.share -> house?.let { Character.getByFilters(houses = arrayListOf(it.id)).share(mainActivity) }
         }
     }
 
@@ -141,7 +141,7 @@ class HouseFragment: AbsToolBarFragment() {
                     house?.let {
 
                         val characterAdapter = CharacterAdapter(mainActivity, R.layout.item_module)
-                        characterAdapter.items = DB.getCharacterDao().getByHouse(arrayListOf(it.id))
+                        characterAdapter.items = Character.getByFilters(houses = arrayListOf(it.id))
                         val recyclerView = RecyclerView(mainActivity)
                         recyclerView.init(3)
                         recyclerView.adapter = characterAdapter

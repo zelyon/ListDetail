@@ -28,7 +28,7 @@ import io.reactivex.schedulers.Schedulers
 import java.io.File
 import java.io.FileOutputStream
 
-internal val isNougat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+internal fun isNougat() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
 
 internal fun List<Character>.share(mainActivity: MainActivity) {
 
@@ -51,7 +51,7 @@ internal fun List<Character>.share(mainActivity: MainActivity) {
                     if (!file.exists()) {
                         Picasso.get().load(character.getPicture()).placeholder(GradientDrawable()).get().compress(Bitmap.CompressFormat.PNG, 100, FileOutputStream(file))
                     }
-                    if (isNougat) {
+                    if (isNougat()) {
                         uris.add(FileProvider.getUriForFile(mainActivity.applicationContext, mainActivity.applicationContext.packageName, file))
                     }
                     else {
