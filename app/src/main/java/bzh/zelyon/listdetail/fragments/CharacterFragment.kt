@@ -50,7 +50,6 @@ class CharacterFragment: AbsToolBarFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         character?.let {
             image.transitionName = it.id.toString()
             image.setImageUrl(it.getPicture(), placeholder)

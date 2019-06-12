@@ -2,6 +2,7 @@ package bzh.zelyon.listdetail
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.Network
@@ -41,8 +42,7 @@ class MainActivity : AppCompatActivity() {
             isOnline?.let {
                 if (it) {
                     loadDatas()
-                }
-                else if (needLoadData) {
+                } else if (needLoadData) {
                     snackBar(getString(R.string.need_connexion))
                 }
             }
@@ -50,6 +50,17 @@ class MainActivity : AppCompatActivity() {
 
         if (fragmentDisplayed == null) {
             setFragment(if (needLoadData) LoadFragment() else MainFragment())
+        }
+
+        intent?.let {
+            parseIntent(it)
+        }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        intent?.let {
+            parseIntent(it)
         }
     }
 
@@ -62,7 +73,7 @@ class MainActivity : AppCompatActivity() {
             if (grantResult != PackageManager.PERMISSION_GRANTED) allGranted = false
         }
 
-        if(allGranted) {
+        if (allGranted) {
             permissionRunnable?.run()
             permissionRunnable = null
         }
@@ -78,8 +89,7 @@ class MainActivity : AppCompatActivity() {
 
         if (allGranted) {
             runnable.run()
-        }
-        else {
+        } else {
             permissionRunnable = runnable
             ActivityCompat.requestPermissions(this, permissions, 0)
         }
@@ -113,8 +123,7 @@ class MainActivity : AppCompatActivity() {
 
                 if (fragmentDisplayed is LoadFragment) {
                     (fragmentDisplayed as LoadFragment).loadImages()
-                }
-                else if (fragmentDisplayed is MainFragment) {
+                } else if (fragmentDisplayed is MainFragment) {
                     (fragmentDisplayed as MainFragment).loadCharacters()
                 }
             }
@@ -132,8 +141,7 @@ class MainActivity : AppCompatActivity() {
 
                 if (fragmentDisplayed is LoadFragment) {
                     (fragmentDisplayed as LoadFragment).loadImages()
-                }
-                else if (fragmentDisplayed is MainFragment) {
+                } else if (fragmentDisplayed is MainFragment) {
                     (fragmentDisplayed as MainFragment).loadHouses()
                 }
             }
@@ -160,6 +168,9 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+    private fun parseIntent(intent: Intent) {
+    }
+
     class ConnectionLiveData(activity: MainActivity) : LiveData<Boolean>() {
 
         private var connectivityManager: ConnectivityManager = activity.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -171,8 +182,7 @@ class MainActivity : AppCompatActivity() {
 
             if (isNougat()) {
                 connectivityManager.registerDefaultNetworkCallback(connectivityManagerCallback)
-            }
-            else {
+            } else {
                 connectivityManager.registerNetworkCallback(NetworkRequest.Builder().addTransportType(android.net.NetworkCapabilities.TRANSPORT_CELLULAR).addTransportType(android.net.NetworkCapabilities.TRANSPORT_WIFI).build(), connectivityManagerCallback)
             }
         }

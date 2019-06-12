@@ -51,11 +51,11 @@ data class Character(
             }
             man?.let {
                 conditions.add("man = ? ")
-                args.add(if(it) "1" else "0")
+                args.add(if (it) "1" else "0")
             }
             dead?.let {
                 conditions.add("dead = ? ")
-                args.add(if(it) "1" else "0")
+                args.add(if (it) "1" else "0")
             }
             if (conditions.isNotEmpty()) {
                 query += "WHERE "
@@ -76,8 +76,8 @@ data class Character(
         @Insert(onConflict = OnConflictStrategy.REPLACE)
         fun insert(characters: List<Character>)
 
-        @Query("SELECT * F" +
-                "ROM character")
+        @Query("SELECT * " +
+                "FROM character")
         fun getAll(): List<Character>
 
         @Query("SELECT * " +

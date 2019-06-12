@@ -54,10 +54,9 @@ class FilterView<T> @JvmOverloads constructor(context: Context, attrs: Attribute
             chip.isChecked = selectedValues.contains(item.value)
             chip.chipIcon = item.image
             chip.setOnCheckedChangeListener { _, _ ->
-                if(selectedValues.contains(item.value)) {
+                if (selectedValues.contains(item.value)) {
                     selectedValues.remove(item.value)
-                }
-                else {
+                } else {
                     selectedValues.add(item.value)
                 }
             }
