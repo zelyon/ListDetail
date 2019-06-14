@@ -7,19 +7,19 @@ import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
-import android.support.design.button.MaterialButton
-import android.support.design.widget.BottomSheetBehavior
-import android.support.design.widget.BottomSheetDialog
-import android.support.v7.widget.RecyclerView
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import bzh.zelyon.listdetail.R
 import bzh.zelyon.listdetail.colorResToColorInt
 import bzh.zelyon.listdetail.init
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.button.MaterialButton
 import java.util.*
 
 class Popup (

@@ -2,9 +2,9 @@ package bzh.zelyon.listdetail.fragments
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.support.graphics.drawable.Animatable2Compat
-import android.support.graphics.drawable.AnimatedVectorDrawableCompat
 import android.view.View
+import androidx.vectordrawable.graphics.drawable.Animatable2Compat
+import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import bzh.zelyon.listdetail.R
 import bzh.zelyon.listdetail.loadImageUrl
 import bzh.zelyon.listdetail.utils.DB

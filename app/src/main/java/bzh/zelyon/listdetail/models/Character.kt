@@ -1,8 +1,8 @@
 package bzh.zelyon.listdetail.models
 
-import android.arch.persistence.db.SimpleSQLiteQuery
-import android.arch.persistence.db.SupportSQLiteQuery
-import android.arch.persistence.room.*
+import androidx.room.*
+import androidx.sqlite.db.SimpleSQLiteQuery
+import androidx.sqlite.db.SupportSQLiteQuery
 import bzh.zelyon.listdetail.BuildConfig
 import bzh.zelyon.listdetail.utils.DB
 import com.google.gson.annotations.Expose
@@ -70,7 +70,7 @@ data class Character(
         }
     }
 
-    @android.arch.persistence.room.Dao
+    @androidx.room.Dao
     interface Dao {
 
         @Insert(onConflict = OnConflictStrategy.REPLACE)

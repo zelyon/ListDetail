@@ -2,11 +2,11 @@ package bzh.zelyon.listdetail.views
 
 import android.content.Context
 import android.graphics.drawable.Drawable
-import android.support.design.chip.Chip
 import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
 import bzh.zelyon.listdetail.R
+import com.google.android.material.chip.Chip
 import kotlinx.android.synthetic.main.view_filter.view.*
 
 class FilterView<T> @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : FrameLayout(context, attrs, defStyleAttr) {

@@ -1,19 +1,18 @@
 package bzh.zelyon.listdetail
 
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.Observer
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkRequest
 import android.os.Bundle
-import android.support.design.widget.Snackbar
-import android.support.v4.app.ActivityCompat
-import android.support.v4.app.Fragment
-import android.support.v7.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import android.view.View
 import android.widget.FrameLayout
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import bzh.zelyon.listdetail.fragments.CharacterFragment
 import bzh.zelyon.listdetail.fragments.LoadFragment
 import bzh.zelyon.listdetail.fragments.MainFragment
@@ -23,6 +22,7 @@ import bzh.zelyon.listdetail.models.Region
 import bzh.zelyon.listdetail.utils.API
 import bzh.zelyon.listdetail.utils.CallBack
 import bzh.zelyon.listdetail.utils.DB
+import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity() {
 
