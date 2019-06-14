@@ -61,7 +61,6 @@ class HouseFragment: AbsToolBarFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         house?.let {
             image.transitionName = it.id.toString()
             image.setImageUrl(it.getImage(), if (placeholder != null) BitmapDrawable(mainActivity.resources, placeholder) else null)
@@ -94,7 +93,6 @@ class HouseFragment: AbsToolBarFragment() {
         override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
             container.removeView(`object` as View)
         }
-
         override fun getItemPosition(`object`: Any) = POSITION_NONE
 
         override fun getCount() = 3
@@ -102,13 +100,10 @@ class HouseFragment: AbsToolBarFragment() {
         override fun getPageTitle(position: Int) = getString(if (position == 0) R.string.fragment_house_tab_infos else if (position == 1) R.string.fragment_house_tab_characters else R.string.fragment_house_tab_region)
 
         override fun instantiateItem(container: ViewGroup, position: Int): View {
-
             val linearLayout = LinearLayout(mainActivity)
             linearLayout.orientation = LinearLayout.VERTICAL
-
             val nestedScrollView = NestedScrollView(mainActivity)
             nestedScrollView.addView(linearLayout, ViewParams(mainActivity, ViewParams.MATCH, ViewParams.MATCH).linear())
-
             when (position) {
                 0 -> {
                     house?.let {
@@ -117,19 +112,16 @@ class HouseFragment: AbsToolBarFragment() {
                         wrecked.setTextColor(mainActivity.colorResToColorInt(R.color.white))
                         wrecked.visibility = if (it.wrecked) View.VISIBLE else View.GONE
                         linearLayout.addView(wrecked, ViewParams(mainActivity).margins(8).linear())
-
                         val city = AppCompatTextView(mainActivity)
                         city.text = getString(R.string.fragment_house_capital, it.city)
                         city.setTextColor(mainActivity.colorResToColorInt(R.color.white))
                         city.visibility = if (it.city.isNotBlank()) View.VISIBLE else View.GONE
                         linearLayout.addView(city, ViewParams(mainActivity).margins(8).linear())
-
                         val devise = AppCompatTextView(mainActivity)
                         devise.text = getString(R.string.fragment_house_devise, it.devise)
                         devise.setTextColor(mainActivity.colorResToColorInt(R.color.white))
                         devise.visibility = if (it.devise.isNotBlank()) View.VISIBLE else View.GONE
                         linearLayout.addView(devise, ViewParams(mainActivity).margins(8).linear())
-
                         val proverb = AppCompatTextView(mainActivity)
                         proverb.text = getString(R.string.fragment_house_proverb, it.proverb)
                         proverb.setTextColor(mainActivity.colorResToColorInt(R.color.white))
@@ -139,26 +131,22 @@ class HouseFragment: AbsToolBarFragment() {
                 }
                 1 -> {
                     house?.let {
-
                         val characterAdapter = CharacterAdapter(mainActivity, R.layout.item_module)
                         characterAdapter.items = Character.getByFilters(houses = arrayListOf(it.id))
                         val recyclerView = RecyclerView(mainActivity)
                         recyclerView.init(3)
                         recyclerView.adapter = characterAdapter
-
                         linearLayout.addView(recyclerView)
                     }
                 }
                 2 -> {
                     region?.let {
-
                         val regionName = AppCompatTextView(mainActivity)
                         regionName.text = it.label
                         regionName.setTextColor(mainActivity.colorResToColorInt(R.color.white))
                         regionName.textSize = 16f
                         regionName.gravity = Gravity.CENTER
                         linearLayout.addView(regionName, ViewParams(mainActivity).margins(8).centerGravity().linear())
-
                         val map = AppCompatImageView(mainActivity)
                         map.setImageUrl(it.getMap())
                         linearLayout.addView(map, ViewParams(mainActivity, ViewParams.MATCH, ViewParams.MATCH).linear())
@@ -174,18 +162,14 @@ class HouseFragment: AbsToolBarFragment() {
     inner class CharacterAdapter constructor(context: Context, idItemLayout: Int) : Adapter<Character>(context, idItemLayout) {
 
         override fun onItemFill(itemView: View, datas: List<Character>, position: Int) {
-
             val character = datas[position]
-
             val image = itemView.findViewById<AppCompatImageView>(R.id.image)
             image.transitionName = character.id.toString()
             image.setImageUrl(character.getThumbnail())
-
             val badge = itemView.findViewById<AppCompatImageView>(R.id.badge)
             badge.visibility = if (character.id == house?.lord ?: 0) View.VISIBLE else View.GONE
             badge.setColorFilter(mainActivity.colorResToColorInt(R.color.yellow))
             badge.setImageResource(R.drawable.ic_lord)
-
             itemView.findViewById<AppCompatTextView>(R.id.name).text = character.name
         }
 

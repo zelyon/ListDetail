@@ -17,7 +17,6 @@ class LoadFragment: AbsFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         animatedVectorDrawableCompat = AnimatedVectorDrawableCompat.create(mainActivity, R.drawable.anim_vector_loader)
         animatedVectorDrawableCompat?.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
             override fun onAnimationEnd(drawable: Drawable?) {
@@ -25,9 +24,7 @@ class LoadFragment: AbsFragment() {
                 animatedVectorDrawableCompat?.start()
             }
         })
-
         loader.setImageDrawable(animatedVectorDrawableCompat)
-
         progress_bar.progress = 0
     }
 
@@ -40,57 +37,42 @@ class LoadFragment: AbsFragment() {
     }
 
     fun loadImages() {
-
         val characters = DB.getCharacterDao().getAll()
         val houses  = DB.getHouseDao().getAll()
         val regions = DB.getRegionDao().getAll()
-
-        if(characters.isNotEmpty() && houses.isNotEmpty() && regions.isNotEmpty()) {
-
+        if (characters.isNotEmpty() && houses.isNotEmpty() && regions.isNotEmpty()) {
             animatedVectorDrawableCompat?.start()
-
             skip.visibility = View.VISIBLE
-
             val imagesUrlsMandatory = ArrayList<String>()
             val imagesUrls = ArrayList<String>()
-
-            for(character in characters) {
+            for (character in characters) {
                 imagesUrlsMandatory.add(character.getThumbnail())
                 imagesUrls.add(character.getPicture())
             }
-
-            for(house in houses) {
+            for (house in houses) {
                 imagesUrlsMandatory.add(house.getThumbnail())
                 imagesUrls.add(house.getImage())
             }
-
-            for(region in regions) {
+            for (region in regions) {
                 imagesUrls.add(region.getMap())
             }
-
-            for(imageUrl in imagesUrls) {
-                imageUrl.loadImageUrl()
-            }
-
             progress_bar.max = imagesUrlsMandatory.size
-
             val semaphore = Semaphore(0)
-
-            for(imageUrl in imagesUrlsMandatory) {
-
+            for (imageUrl in imagesUrlsMandatory) {
                 imageUrl.loadImageUrl(Runnable {
-
                     semaphore.release()
-
-                    if(isAdded) {
+                    if (isAdded) {
                         mainActivity.runOnUiThread {
                             progress_bar.progress++
-                            if(semaphore.tryAcquire(imagesUrlsMandatory.size)) {
+                            if (semaphore.tryAcquire(imagesUrlsMandatory.size)) {
                                 mainActivity.setFragment(MainFragment())
                             }
                         }
                     }
                 })
+            }
+            for (imageUrl in imagesUrls) {
+                imageUrl.loadImageUrl()
             }
         }
     }

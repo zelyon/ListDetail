@@ -21,17 +21,14 @@ class CircleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-
         val width = MeasureSpec.getSize(widthMeasureSpec)
         val height = MeasureSpec.getSize(heightMeasureSpec)
         val centerX = measuredWidth/2f
         val centerY = measuredHeight/2f
-
         path.reset()
         path.moveTo(centerX, centerY)
         path.addCircle(centerX, centerY, Math.min(width/2f, height/2f) - 10f, Path.Direction.CW)
         path.close()
-
         setMeasuredDimension(width, height)
         invalidate()
     }
