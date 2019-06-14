@@ -13,13 +13,11 @@ abstract class AbsToolBarFragment: AbsFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setHasOptionsMenu(true)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         mainActivity.setSupportActionBar(view.findViewById(R.id.toolbar))
         mainActivity.supportActionBar?.title = getTitle()
         mainActivity.supportActionBar?.setDisplayHomeAsUpEnabled(showBack())
@@ -33,10 +31,9 @@ abstract class AbsToolBarFragment: AbsFragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if(item.itemId == android.R.id.home) {
+        if (item.itemId == android.R.id.home) {
             mainActivity.supportFragmentManager.popBackStack()
-        }
-        else {
+        } else {
             onIdClick(item.itemId)
         }
         return super.onOptionsItemSelected(item)

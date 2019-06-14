@@ -22,16 +22,13 @@ abstract class AbsFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         integrateOnClick(view)
     }
 
     private fun integrateOnClick(view: View) {
-
         if (view.isClickable && !view.hasOnClickListeners()) {
             view.setOnClickListener { onIdClick(it.id) }
         }
-
         if (view is ViewGroup) {
             for (i in 0 until view.childCount) {
                 integrateOnClick(view.getChildAt(i))

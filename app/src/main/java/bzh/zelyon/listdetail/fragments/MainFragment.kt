@@ -71,11 +71,9 @@ class MainFragment: AbsToolBarFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         characterAdapter = CharacterAdapter(mainActivity, if (modeList) R.layout.item_list else R.layout.item_module)
         recycler_view.init(if (modeList) 1 else 3)
         recycler_view.adapter = characterAdapter
-
         action_mode_toolbar.setNavigationIcon(R.drawable.ic_close)
         action_mode_toolbar.inflateMenu(R.menu.character)
         action_mode_toolbar.setNavigationOnClickListener {
@@ -86,7 +84,6 @@ class MainFragment: AbsToolBarFragment() {
             showActionMode(false)
             false
         }
-
         filter_toolbar.setNavigationIcon(R.drawable.ic_close)
         filter_toolbar.inflateMenu(R.menu.filter)
         filter_toolbar.setNavigationOnClickListener {
@@ -107,21 +104,10 @@ class MainFragment: AbsToolBarFragment() {
             }
             false
         }
-
         search_view.setQuery(searchApply, false)
-
-        val otherItems = listOf(
-            Item(Character.GENDER_MALE, getString(R.string.fragment_character_gender_man), mainActivity.drawableResToDrawable(R.drawable.ic_male, R.color.black)),
-            Item(Character.GENDER_FEMALE, getString(R.string.fragment_character_gender_woman), mainActivity.drawableResToDrawable( R.drawable.ic_female, R.color.black)),
-            Item(Character.ALIVE, getString(R.string.fragment_character_alive_man), mainActivity.drawableResToDrawable(R.drawable.ic_alive, R.color.black)),
-            Item(Character.DEAD, getString(R.string.fragment_character_dead_man), mainActivity.drawableResToDrawable(R.drawable.ic_dead, R.color.black))
-        )
-
-        (other_filter_view as FilterView<String>).load(otherItems, othersApply)
-
         loadCharacters()
-
         loadHouses()
+        loadOthers()
     }
 
     override fun getLayoutId() = R.layout.fragment_main
@@ -164,21 +150,16 @@ class MainFragment: AbsToolBarFragment() {
     }
 
     fun loadCharacters() {
-
         val man = othersApply.contains(Character.GENDER_MALE)
         val female = othersApply.contains(Character.GENDER_FEMALE)
         val dead = othersApply.contains(Character.DEAD)
         val alive = othersApply.contains(Character.ALIVE)
-
         characterAdapter?.items = Character.getByFilters(searchApply, housesApply, if (man != female) man else null, if (dead != alive) dead else null)
     }
 
     fun loadHouses() {
-
         val items= mutableListOf<Item<Long>>()
-
         for (house in DB.getHouseDao().getAll()) {
-
             Picasso.get().load(house.getThumbnail()).placeholder(GradientDrawable()).into(object : Target {
 
                 override fun onBitmapLoaded(bitmap: Bitmap, from: Picasso.LoadedFrom) {
@@ -193,11 +174,21 @@ class MainFragment: AbsToolBarFragment() {
         }
     }
 
+    private fun loadOthers() {
+        (other_filter_view as FilterView<String>).load(listOf(
+            Item(Character.GENDER_MALE, getString(R.string.fragment_character_gender_man), mainActivity.drawableResToDrawable(R.drawable.ic_male, R.color.black)),
+            Item(Character.GENDER_FEMALE, getString(R.string.fragment_character_gender_woman), mainActivity.drawableResToDrawable( R.drawable.ic_female, R.color.black)),
+            Item(Character.ALIVE, getString(R.string.fragment_character_alive_man), mainActivity.drawableResToDrawable(R.drawable.ic_alive, R.color.black)),
+            Item(Character.DEAD, getString(R.string.fragment_character_dead_man), mainActivity.drawableResToDrawable(R.drawable.ic_dead, R.color.black))
+        ), othersApply)
+    }
+
     private fun showSearchAndFilter(show: Boolean) {
         filter_layout.visibility = View.VISIBLE
         val radius = Math.sqrt((filter_layout.height * filter_layout.height + filter_layout.height * filter_layout.height).toDouble()).toFloat()
         val circularReveal= ViewAnimationUtils.createCircularReveal(filter_layout, filter_layout.height,0, if (show) 0f else radius, if (show) radius else 0f).setDuration(600)
         circularReveal.addListener(object : AnimatorListenerAdapter() {
+
             override fun onAnimationEnd(animation: Animator) {
                 super.onAnimationEnd(animation)
                 filter_layout.visibility = if (show) View.VISIBLE else View.INVISIBLE
@@ -210,8 +201,7 @@ class MainFragment: AbsToolBarFragment() {
         action_mode_toolbar.visibility = if (show) View.VISIBLE else View.GONE
         if (show) {
             action_mode_toolbar.title = selectedCharacters.size.toString()
-        }
-        else {
+        } else {
             selectedCharacters.clear()
         }
         characterAdapter?.notifyDataSetChanged()
@@ -240,8 +230,7 @@ class MainFragment: AbsToolBarFragment() {
             if (action_mode_toolbar.visibility == View.GONE) {
                 val image= itemView.findViewById<AppCompatImageView>(R.id.image)
                 mainActivity.setFragment(CharacterFragment.newInstance(character.id, (image.drawable as BitmapDrawable).bitmap), image)
-            }
-            else {
+            } else {
                 selectCharacter(itemView, character)
             }
         }
@@ -253,14 +242,12 @@ class MainFragment: AbsToolBarFragment() {
         private fun selectCharacter(itemView: View, character: Character) {
             if (selectedCharacters.contains(character)) {
                 selectedCharacters.remove(character)
-            }
-            else {
+            } else {
                 selectedCharacters.add(character)
             }
             if (modeList) {
                 showActionMode(selectedCharacters.isNotEmpty())
-            }
-            else {
+            } else {
                 val scale= if (selectedCharacters.contains(character)) .8f else 1f
                 itemView.findViewById<AppCompatImageView>(R.id.image).animate().scaleY(scale).scaleX(scale).setDuration(200L).withEndAction {
                     showActionMode(selectedCharacters.isNotEmpty())

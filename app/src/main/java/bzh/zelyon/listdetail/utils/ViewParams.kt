@@ -29,10 +29,10 @@ class ViewParams (val context: Context, private var width: Int = MATCH, private 
     private var rightMargin = 0
 
     init {
-        if(width != MATCH && width != WRAP) {
+        if (width != MATCH && width != WRAP) {
             width = context.dpToPixel(width)
         }
-        if(height != MATCH && height != WRAP) {
+        if (height != MATCH && height != WRAP) {
             height = context.dpToPixel(height)
         }
     }
@@ -123,9 +123,7 @@ class ViewParams (val context: Context, private var width: Int = MATCH, private 
     }
 
     fun linear(): LinearLayout.LayoutParams {
-
         val result = LinearLayout.LayoutParams(width, height, weight)
-
         if (topMargin != 0) {
             result.topMargin = topMargin
         }
@@ -138,18 +136,15 @@ class ViewParams (val context: Context, private var width: Int = MATCH, private 
         if (rightMargin != 0) {
             result.rightMargin = rightMargin
         }
-
         when {
             centerGravity -> result.gravity = Gravity.CENTER
             centerHorizontalGravity -> result.gravity = Gravity.CENTER_HORIZONTAL
             centerVerticalGrativity -> result.gravity = Gravity.CENTER_VERTICAL
         }
-
         when {
             topGravity -> result.gravity = Gravity.TOP
             bottomGravity -> result.gravity = Gravity.BOTTOM
         }
-
         when {
             leftGravity -> result.gravity = result.gravity or Gravity.LEFT
             rightGravity -> result.gravity = result.gravity or Gravity.RIGHT
@@ -160,9 +155,7 @@ class ViewParams (val context: Context, private var width: Int = MATCH, private 
 
 
     fun relative(): RelativeLayout.LayoutParams {
-
         val result = RelativeLayout.LayoutParams(width, height)
-
         if (topMargin != 0) {
             result.topMargin = topMargin
         }
@@ -175,18 +168,15 @@ class ViewParams (val context: Context, private var width: Int = MATCH, private 
         if (rightMargin != 0) {
             result.rightMargin = rightMargin
         }
-
         when {
             centerGravity -> result.addRule(RelativeLayout.CENTER_IN_PARENT)
             centerHorizontalGravity -> result.addRule(RelativeLayout.CENTER_HORIZONTAL)
             centerVerticalGrativity -> result.addRule(RelativeLayout.CENTER_VERTICAL)
         }
-
         when {
             topGravity -> result.addRule(RelativeLayout.ALIGN_PARENT_TOP)
             bottomGravity -> result.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
         }
-
         when {
             leftGravity -> result.addRule(RelativeLayout.ALIGN_PARENT_LEFT)
             rightGravity -> result.addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
