@@ -56,9 +56,6 @@ class LoadFragment: AbsFragment() {
             for (region in regions) {
                 imagesUrls.add(region.getMap())
             }
-            for (imageUrl in imagesUrls) {
-                imageUrl.loadImageUrl()
-            }
             progress_bar.max = imagesUrlsMandatory.size
             val semaphore = Semaphore(0)
             for (imageUrl in imagesUrlsMandatory) {
@@ -73,6 +70,9 @@ class LoadFragment: AbsFragment() {
                         }
                     }
                 })
+            }
+            for (imageUrl in imagesUrls) {
+                imageUrl.loadImageUrl()
             }
         }
     }

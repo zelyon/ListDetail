@@ -26,9 +26,11 @@ import android.support.v4.content.FileProvider
 import android.support.v4.graphics.ColorUtils
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Patterns
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.webkit.MimeTypeMap
+import android.webkit.URLUtil
 import android.widget.ImageView
 import bzh.zelyon.listdetail.models.Character
 import com.squareup.picasso.Callback
@@ -156,7 +158,7 @@ internal fun Activity.goStore() {
 
 internal fun MainActivity.openCamera() {
     checkPermissions(Runnable {
-        startActivityForResult(Intent(MediaStore.ACTION_IMAGE_CAPTURE), 0)
+        startActivityForResult(Intent(MediaStore.ACTION_IMAGE_CAPTURE).putExtra(MediaStore.EXTRA_OUTPUT, FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID, File(externalCacheDir, System.currentTimeMillis().toString().plus(".png")))), 0)
     }, Manifest.permission.CAMERA)
 }
 
@@ -168,103 +170,58 @@ internal fun MainActivity.openGallery(multiple: Boolean = false) {
 
 internal fun Context.getBitmapFromCameraUri(uri: Uri) = MediaStore.Images.Media.getBitmap(contentResolver, uri)
 
-internal fun Context.getLocalFileFromGalleryUri(uri: Uri): File {
+internal fun Context.getLocalFileFromGalleryUri(uri: Uri): File? {
 
-    val isDocumentUri = DocumentsContract.isDocumentUri(this, uri)
-    val isExternalStorage = isDocumentUri && uri.authority == "com.android.externalstorage.documents" && DocumentsContract.getDocumentId(uri).split(":")[0] == "primary"
-    val isDownloadStorage = isDocumentUri && uri.authority == "com.android.providers.downloads.documents"
-    val isImageStorage = isDocumentUri && uri.authority == "com.android.providers.media.documents" && DocumentsContract.getDocumentId(uri).split(":")[0] == "image"
     val isFile = uri.scheme == ContentResolver.SCHEME_FILE
+    val isDocumentUri = DocumentsContract.isDocumentUri(this, uri)
+    val isExternalStorage = isDocumentUri && uri.authority == "com.android.externalstorage.documents"
+    val isDownloadStorage = isDocumentUri && uri.authority == "com.android.providers.downloads.documents"
+    val isImageStorage = isDocumentUri && uri.authority == "com.android.providers.media.documents"
     val isContent = uri.scheme == ContentResolver.SCHEME_CONTENT
+    val isGooglePhotosNew = isContent && uri.authority == "com.google.android.apps.photos.contentprovider"
     val isGooglePhotos = isContent && uri.authority == "com.google.android.apps.photos.content"
+    val isDrive = isContent && uri.authority == "com.google.android.apps.docs.storage"
     val isContentStorage = isContent && uri.path?.contains("/storage") ?: false
 
     val path = when {
-        isExternalStorage -> Environment.getExternalStorageDirectory().absolutePath + "/" + DocumentsContract.getDocumentId(uri).split(":")[1]
+        isFile -> uri.path
+        isExternalStorage -> Environment.getExternalStorageDirectory().toString() + "/" + DocumentsContract.getDocumentId(uri).split(":")[1]
         isDownloadStorage -> getPathFromCursor(ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), DocumentsContract.getDocumentId(uri).toLong()), arrayOf(MediaStore.Images.Media.DATA))
         isImageStorage -> getPathFromCursor(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, arrayOf(MediaStore.Images.Media.DATA), MediaStore.Images.Media._ID + "=?", arrayOf(DocumentsContract.getDocumentId(uri).split(":")[1]))
-        isFile -> uri.path
         isGooglePhotos -> uri.lastPathSegment
         isContentStorage -> uri.path?.substring(uri.path?.indexOf("/storage") ?: 0)
-        isContent -> getPathFromCursor(uri, arrayOf(MediaStore.Images.Media.DATA))
+        isDrive || isGooglePhotosNew || isContent -> getPathFromCursor(uri, arrayOf(MediaStore.Images.Media.DATA))
         else -> null
     }
     var name = System.currentTimeMillis().toString().plus(".").plus(getExtension(if (path != null) Uri.parse(path) else uri))
-    val cursor = contentResolver.query(uri, null, null, null, null)
-    if (cursor?.moveToFirst() == true) {
-        name = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)) ?: name
-    }
-    cursor?.close()
-
-    /*
-    if (DocumentsContract.isDocumentUri(this, uri)) {
-        val documentId = DocumentsContract.getDocumentId(uri)
-        val documentIdTab = documentId.split(":")
-        if (uri.authority == "com.android.externalstorage.documents" && documentIdTab[0] == "primary") {
-            path = Environment.getExternalStorageDirectory().absolutePath + "/" + documentIdTab[1]
-        } else if (uri.authority == "com.android.providers.downloads.documents") {
-            contentResolver.query(ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), documentId.toLong()), arrayOf("_data"), null, null, null)?.let {
-                it.moveToFirst()
-                path = it.getString(it.getColumnIndexOrThrow("_data"))
-                it.close()
-            }
-        } else if (uri.authority == "com.android.providers.media.documents" && "image" == documentIdTab[0]) {
-            contentResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, arrayOf("_data"), "_id=?", arrayOf(documentIdTab[1]), null)?.let {
-                it.moveToFirst()
-                path = it.getString(it.getColumnIndexOrThrow("_data"))
-                it.close()
-            }
-        }
-    }
-    if (path == null) {
-        if (uri.scheme == ContentResolver.SCHEME_FILE) {
-            path = uri.path
-            name = uri.lastPathSegment
-        } else if (uri.scheme == ContentResolver.SCHEME_CONTENT) {
-            if (uri.authority == "com.google.android.apps.photos.content") {
-                path = uri.lastPathSegment
-            } else if (uri.path.contains("/storage")) {
-                path = uri.path.substring(uri.path.indexOf("/storage"))
-            }
-
-            if (path == null) {
-                contentResolver.query(uri, arrayOf("_data"), null, null, null)?.let {
-                    it.moveToFirst()
-                    path = it.getString(it.getColumnIndexOrThrow("_data"))
-                    it.close()
-                }
-            }
-        }
-    }
-    contentResolver.query(uri, null, null, null, null)?.let {
-        it.moveToFirst()
-        name = it.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+    contentResolver.query(uri, null, null, null, null)?.use {
+        if (it.moveToFirst()) name = it.getString(it.getColumnIndex(OpenableColumns.DISPLAY_NAME)) ?: name
         it.close()
     }
-    */
 
-    val outputFile = File(externalCacheDir, name)
+    val outputFile = createNewFile(name)
     when {
         path != null -> FileInputStream(File(path))
-        uri.toString().startsWith("http") -> URL(uri.toString()).openStream()
+        Patterns.WEB_URL.matcher(uri.toString()).matches() && URLUtil.isValidUrl(uri.toString()) -> URL(uri.toString()).openStream()
         else -> contentResolver.openInputStream(uri)
-    }.use {input ->
-        FileOutputStream(outputFile).use { output ->
-            input.copyTo(output)
-        }
-    }
+    }.use { inputStream -> FileOutputStream(outputFile).use { outputStream -> inputStream.copyTo(outputStream) }}
 
-    return File(outputFile.absolutePath)
+    return if (outputFile.exists()) outputFile else null
 }
 
 internal fun Context.getPathFromCursor(uri: Uri, projection: Array<String>? = null, selection: String? = null, selectionArgs: Array<String>? = null): String? {
-    var result:String? = null
-    val cursor = contentResolver.query(uri, projection, selection, selectionArgs, null)
-    if (cursor?.moveToFirst() == true) {
-        result = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA))
-    }
-    cursor?.close()
-    return result
+    try {
+        contentResolver.query(uri, projection, selection, selectionArgs, null)?.use {
+            if (it.moveToFirst()) return it.getString(it.getColumnIndex(MediaStore.Images.Media.DATA))
+            it.close()
+        }
+    } catch (e: Exception) {}
+    return null
+}
+
+internal fun Context.createNewFile(name: String): File {
+    val file = File(externalCacheDir, name)
+    return if (file.exists()) createNewFile("_$name") else file
 }
 
 internal fun Context.getExtension(uri: Uri) = if (uri.scheme == ContentResolver.SCHEME_CONTENT) MimeTypeMap.getSingleton().getExtensionFromMimeType(contentResolver.getType(uri)) else MimeTypeMap.getFileExtensionFromUrl(uri.path)
