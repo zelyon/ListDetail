@@ -20,7 +20,7 @@ class CharacterFragment: AbsToolBarFragment() {
         const val ID = "ID"
         const val PLACEHOLDER = "PLACEHOLDER"
 
-        fun newInstance(id: Long, placeholder: Bitmap) =
+        fun newInstance(id: Long, placeholder: Bitmap? = null) =
             CharacterFragment().apply {
                 arguments = Bundle().apply {
                     putLong(ID, id)
@@ -31,7 +31,7 @@ class CharacterFragment: AbsToolBarFragment() {
 
     var character: Character? = null
     var house: House? = null
-    var placeholder: Drawable? = null
+    var placeholder: Bitmap? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +43,7 @@ class CharacterFragment: AbsToolBarFragment() {
 
         arguments?.let {
             character = DB.getCharacterDao().getById(it.getLong(ID))
-            placeholder = BitmapDrawable(mainActivity.resources, it.getParcelable(PLACEHOLDER) as Bitmap)
+            placeholder = it.getParcelable(PLACEHOLDER)
             house = DB.getHouseDao().getById(character?.house ?: 0)
         }
     }
@@ -53,7 +53,7 @@ class CharacterFragment: AbsToolBarFragment() {
 
         character?.let {
             image.transitionName = it.id.toString()
-            image.setImageUrl(it.getPicture(), placeholder)
+            image.setImageUrl(it.getPicture(), if (placeholder != null) BitmapDrawable(mainActivity.resources, placeholder) else null)
             description.visibility = if (it.description.isNotBlank()) View.VISIBLE else View.GONE
             description.text = it.description
             gender_icon.setImageResource(if (it.man) R.drawable.ic_male else R.drawable.ic_female)

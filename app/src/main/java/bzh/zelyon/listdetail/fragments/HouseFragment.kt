@@ -42,7 +42,7 @@ class HouseFragment: AbsToolBarFragment() {
 
     var house: House? = null
     var region: Region? = null
-    var placeholder: Drawable? = null
+    var placeholder: Bitmap? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,7 +54,7 @@ class HouseFragment: AbsToolBarFragment() {
 
         arguments?.let {
             house = DB.getHouseDao().getById(it.getLong(ID))
-            placeholder = BitmapDrawable(mainActivity.resources, it.getParcelable(PLACEHOLDER) as Bitmap)
+            placeholder = it.getParcelable(PLACEHOLDER)
             region = DB.getRegionDao().getById(house?.region ?: 0)
         }
     }
@@ -64,7 +64,7 @@ class HouseFragment: AbsToolBarFragment() {
 
         house?.let {
             image.transitionName = it.id.toString()
-            image.setImageUrl(it.getImage(), placeholder)
+            image.setImageUrl(it.getImage(), if (placeholder != null) BitmapDrawable(mainActivity.resources, placeholder) else null)
             view_pager.adapter = pagerAdapter
             view_pager.offscreenPageLimit = Integer.MAX_VALUE
             tab_layout.setupWithViewPager(view_pager)
