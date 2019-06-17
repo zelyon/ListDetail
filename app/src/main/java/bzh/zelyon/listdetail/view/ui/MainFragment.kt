@@ -79,6 +79,7 @@ class MainFragment: AbsToolBarFragment() {
         characterAdapter = CharacterAdapter(mainActivity, if (modeList) R.layout.item_list else R.layout.item_module)
         recycler_view.init(if (modeList) 1 else 3)
         recycler_view.adapter = characterAdapter
+        characterAdapter?.setDragNDrop(recycler_view)
         action_mode_toolbar.setNavigationIcon(R.drawable.ic_close)
         action_mode_toolbar.inflateMenu(R.menu.character)
         action_mode_toolbar.setNavigationOnClickListener {
@@ -242,6 +243,21 @@ class MainFragment: AbsToolBarFragment() {
 
         override fun onItemLongClick(itemView: View, items: List<Character>, position: Int) {
             selectCharacter(itemView, items[position])
+        }
+
+        override fun onItemStartDrag(itemView: View) {
+            itemView.animate().scaleY(0.8f).scaleX(0.8f).alpha(0.8f).duration = 200L
+        }
+
+        override fun onItemEndDrag(itemView: View) {
+            itemView.animate().scaleY(1f).scaleX(1f).alpha(1f).duration = 200L
+        }
+
+        override fun onItemsSwap(items: List<Character>) {
+            for(i in 0 until items.size) {
+                items[i].position = i.toLong()
+            }
+            DB.getCharacterDao().update(items)
         }
 
         private fun selectCharacter(itemView: View, character: Character) {

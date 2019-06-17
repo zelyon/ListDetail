@@ -4,9 +4,13 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import java.util.*
 
 abstract class Adapter<T> (val context: Context, var idItemLayout: Int): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    private var dragAndDrop = false
 
     var items = listOf<T>()
         set(value) {
@@ -24,14 +28,60 @@ abstract class Adapter<T> (val context: Context, var idItemLayout: Int): Recycle
             onItemClick(viewHolder.itemView, items, position)
         }
         viewHolder.itemView.setOnLongClickListener {
-            onItemLongClick(viewHolder.itemView, items, position)
+            if(dragAndDrop) {
+                itemTouchHelper.startDrag(viewHolder)
+            }
+            else {
+                onItemLongClick(viewHolder.itemView, items, position)
+            }
             true
         }
     }
 
     abstract fun onItemFill(itemView: View, items: List<T>, position: Int)
 
-    abstract fun onItemClick(itemView: View, items: List<T>, position: Int)
+    open fun onItemClick(itemView: View, items: List<T>, position: Int) {}
 
-    abstract fun onItemLongClick(itemView: View, items: List<T>, position: Int)
+    open fun onItemLongClick(itemView: View, items: List<T>, position: Int) {}
+
+    open fun onItemStartDrag(itemView: View) {}
+
+    open fun onItemEndDrag(itemView: View) {}
+
+    open fun onItemsSwap(items: List<T>) {}
+
+    fun setDragNDrop(recyclerView: RecyclerView) {
+        dragAndDrop = true
+        itemTouchHelper.attachToRecyclerView(recyclerView)
+    }
+
+    private val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.Callback(){
+
+        override fun getMovementFlags(p0: RecyclerView, p1: RecyclerView.ViewHolder) =  makeMovementFlags(ItemTouchHelper.UP or ItemTouchHelper.DOWN or ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT, 0)
+
+        override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+            Collections.swap(items, viewHolder.adapterPosition, target.adapterPosition)
+            onItemsSwap(items)
+            notifyItemMoved(viewHolder.adapterPosition, target.adapterPosition)
+
+            return true
+        }
+
+        override fun onSwiped(p0: RecyclerView.ViewHolder, p1: Int) {}
+
+        override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
+            if (actionState != ItemTouchHelper.ACTION_STATE_IDLE) {
+                viewHolder?.let {
+                    onItemStartDrag(it.itemView)
+                }
+            }
+
+            super.onSelectedChanged(viewHolder, actionState)
+        }
+
+        override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
+            super.clearView(recyclerView, viewHolder)
+            onItemEndDrag(viewHolder.itemView)
+        }
+    })
 }

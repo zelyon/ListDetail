@@ -19,6 +19,8 @@ data class Character(
     @ColumnInfo(name = "image") @SerializedName("image") @Expose var image: String = ""
 ) {
 
+    @ColumnInfo(name = "position") var position: Long? = null
+
     fun getPicture() = BuildConfig.baseUrl + URL + "image/" + image
     fun getThumbnail() = BuildConfig.baseUrl + URL + "thumbnail/" + image
 
@@ -66,6 +68,7 @@ data class Character(
                     }
                 }
             }
+            query += "ORDER BY position, id"
             return DB.getCharacterDao().getByFilters(SimpleSQLiteQuery(query, args.toTypedArray()))
         }
     }
@@ -73,11 +76,15 @@ data class Character(
     @androidx.room.Dao
     interface Dao {
 
-        @Insert(onConflict = OnConflictStrategy.REPLACE)
+        @Insert(onConflict = OnConflictStrategy.IGNORE)
         fun insert(characters: List<Character>)
 
+        @Update
+        fun update(characters: List<Character>)
+
         @Query("SELECT * " +
-                "FROM character")
+                "FROM character " +
+                "ORDER BY position, id")
         fun getAll(): List<Character>
 
         @Query("SELECT * " +

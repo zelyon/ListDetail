@@ -68,7 +68,7 @@ class HouseFragment: AbsToolBarFragment() {
             image.transitionName = it.id.toString()
             image.setImageUrl(it.getImage(), if (placeholder != null) BitmapDrawable(mainActivity.resources, placeholder) else null)
             view_pager.adapter = pagerAdapter
-            view_pager.offscreenPageLimit = Integer.MAX_VALUE
+            view_pager.offscreenPageLimit = Int.MAX_VALUE
             tab_layout.setupWithViewPager(view_pager)
         }
     }
@@ -180,7 +180,5 @@ class HouseFragment: AbsToolBarFragment() {
             val image = itemView.findViewById<AppCompatImageView>(R.id.image)
             mainActivity.setFragment(CharacterFragment.newInstance(datas[position].id, (image.drawable as BitmapDrawable).bitmap), image)
         }
-
-        override fun onItemLongClick(itemView: View, datas: List<Character>, position: Int) {}
     }
 }
