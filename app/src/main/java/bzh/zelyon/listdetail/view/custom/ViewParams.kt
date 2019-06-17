@@ -1,4 +1,4 @@
-package bzh.zelyon.listdetail.utils
+package bzh.zelyon.listdetail.view.custom
 
 import android.content.Context
 import android.view.Gravity
@@ -6,7 +6,7 @@ import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
-import bzh.zelyon.listdetail.dpToPixel
+import bzh.zelyon.listdetail.util.dpToPixel
 
 class ViewParams (val context: Context, private var width: Int = MATCH, private var height: Int = WRAP, private var weight: Float = -1f) {
 

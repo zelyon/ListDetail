@@ -1,4 +1,4 @@
-package bzh.zelyon.listdetail
+package bzh.zelyon.listdetail.util
 
 import android.Manifest
 import android.app.Activity
@@ -19,20 +19,23 @@ import android.os.Vibrator
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.provider.OpenableColumns
-import android.support.annotation.ColorRes
-import android.support.annotation.DrawableRes
-import android.support.v4.content.ContextCompat
-import android.support.v4.content.FileProvider
-import android.support.v4.graphics.ColorUtils
-import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import androidx.core.graphics.ColorUtils
 import android.util.Patterns
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.webkit.MimeTypeMap
 import android.webkit.URLUtil
 import android.widget.ImageView
-import bzh.zelyon.listdetail.models.Character
+import androidx.annotation.ColorRes
+import androidx.annotation.DrawableRes
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import bzh.zelyon.listdetail.BuildConfig
+import bzh.zelyon.listdetail.R
+import bzh.zelyon.listdetail.model.Character
+import bzh.zelyon.listdetail.view.ui.MainActivity
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import io.reactivex.Observable
@@ -153,7 +156,7 @@ internal fun View.vibrate(step: Int = 0) {
 }
 
 internal fun Activity.goStore() {
-    startActivity(Intent(ACTION_VIEW, Uri.parse("market://details?id="+BuildConfig.APPLICATION_ID)))
+    startActivity(Intent(ACTION_VIEW, Uri.parse("market://details?id=" + BuildConfig.APPLICATION_ID)))
 }
 
 internal fun MainActivity.openCamera() {

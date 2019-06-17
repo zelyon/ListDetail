@@ -1,14 +1,12 @@
-package bzh.zelyon.listdetail.utils
+package bzh.zelyon.listdetail.view.adapter
 
 import android.content.Context
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.RecyclerView.Adapter
-import android.support.v7.widget.RecyclerView.ViewHolder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 
-abstract class Adapter<T> (val context: Context, var idItemLayout: Int): Adapter<ViewHolder>() {
+abstract class Adapter<T> (val context: Context, var idItemLayout: Int): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var items = listOf<T>()
         set(value) {
@@ -20,7 +18,7 @@ abstract class Adapter<T> (val context: Context, var idItemLayout: Int): Adapter
 
     override fun getItemCount() = items.size
 
-    override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {
         onItemFill(viewHolder.itemView, items, position)
         viewHolder.itemView.setOnClickListener {
             onItemClick(viewHolder.itemView, items, position)

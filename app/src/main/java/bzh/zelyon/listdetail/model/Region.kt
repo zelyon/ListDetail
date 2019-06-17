@@ -1,6 +1,6 @@
-package bzh.zelyon.listdetail.models
+package bzh.zelyon.listdetail.model
 
-import android.arch.persistence.room.*
+import androidx.room.*
 import bzh.zelyon.listdetail.BuildConfig
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
@@ -18,7 +18,7 @@ data class Region(
         const val URL = "api/got/region/"
     }
 
-    @android.arch.persistence.room.Dao
+    @androidx.room.Dao
     interface Dao {
 
         @Insert(onConflict = OnConflictStrategy.REPLACE)

@@ -1,9 +1,10 @@
-package bzh.zelyon.listdetail.utils
+package bzh.zelyon.listdetail.api
 
 import bzh.zelyon.listdetail.BuildConfig
-import bzh.zelyon.listdetail.models.Character
-import bzh.zelyon.listdetail.models.House
-import bzh.zelyon.listdetail.models.Region
+import bzh.zelyon.listdetail.model.Character
+import bzh.zelyon.listdetail.model.House
+import bzh.zelyon.listdetail.model.Region
+import bzh.zelyon.listdetail.view.callback.CallBack
 import com.google.gson.GsonBuilder
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
