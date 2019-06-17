@@ -20,7 +20,7 @@
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             app:titleEnabled="false">
 
-            <bzh.zelyon.listdetail.views.SquareView
+            <bzh.zelyon.listdetail.view.custom.SquareView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:layout_collapseMode="parallax">
@@ -32,7 +32,7 @@
                     android:scaleType="centerCrop"
                     app:layout_collapseMode="parallax"/>
 
-            </bzh.zelyon.listdetail.views.SquareView>
+            </bzh.zelyon.listdetail.view.custom.SquareView>
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"

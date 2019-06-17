@@ -1,4 +1,4 @@
-package bzh.zelyon.listdetail.fragments
+package bzh.zelyon.listdetail.view.ui
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -14,14 +14,17 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.PagerAdapter
-import androidx.viewpager.widget.ViewPager
 import bzh.zelyon.listdetail.*
-import bzh.zelyon.listdetail.models.Character
-import bzh.zelyon.listdetail.models.House
-import bzh.zelyon.listdetail.models.Region
-import bzh.zelyon.listdetail.utils.Adapter
-import bzh.zelyon.listdetail.utils.DB
-import bzh.zelyon.listdetail.utils.ViewParams
+import bzh.zelyon.listdetail.model.Character
+import bzh.zelyon.listdetail.model.House
+import bzh.zelyon.listdetail.model.Region
+import bzh.zelyon.listdetail.view.adapter.Adapter
+import bzh.zelyon.listdetail.db.DB
+import bzh.zelyon.listdetail.util.colorResToColorInt
+import bzh.zelyon.listdetail.util.init
+import bzh.zelyon.listdetail.util.setImageUrl
+import bzh.zelyon.listdetail.util.share
+import bzh.zelyon.listdetail.view.custom.ViewParams
 import kotlinx.android.synthetic.main.fragment_house.*
 
 class HouseFragment: AbsToolBarFragment() {

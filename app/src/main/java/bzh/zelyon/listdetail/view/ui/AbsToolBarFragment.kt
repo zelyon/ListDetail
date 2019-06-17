@@ -1,4 +1,4 @@
-package bzh.zelyon.listdetail.fragments
+package bzh.zelyon.listdetail.view.ui
 
 import android.os.Bundle
 import android.view.Menu

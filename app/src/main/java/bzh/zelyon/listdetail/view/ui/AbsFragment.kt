@@ -1,11 +1,10 @@
-package bzh.zelyon.listdetail.fragments
+package bzh.zelyon.listdetail.view.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import bzh.zelyon.listdetail.MainActivity
 
 abstract class AbsFragment: Fragment() {
 

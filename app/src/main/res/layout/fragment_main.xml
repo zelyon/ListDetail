@@ -95,7 +95,7 @@
                         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
                         app:queryHint="@string/fragment_main_filter_search"/>
 
-                    <bzh.zelyon.listdetail.views.FilterView
+                    <bzh.zelyon.listdetail.view.custom.FilterView
                         android:id="@+id/house_filter_view"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -103,7 +103,7 @@
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp"/>
 
-                    <bzh.zelyon.listdetail.views.FilterView
+                    <bzh.zelyon.listdetail.view.custom.FilterView
                         android:id="@+id/other_filter_view"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

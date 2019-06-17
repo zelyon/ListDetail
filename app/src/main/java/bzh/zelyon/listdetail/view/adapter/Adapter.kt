@@ -1,4 +1,4 @@
-package bzh.zelyon.listdetail.utils
+package bzh.zelyon.listdetail.view.adapter
 
 import android.content.Context
 import android.view.LayoutInflater

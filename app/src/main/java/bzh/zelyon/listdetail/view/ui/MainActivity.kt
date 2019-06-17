@@ -1,4 +1,4 @@
-package bzh.zelyon.listdetail
+package bzh.zelyon.listdetail.view.ui
 
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -13,15 +13,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import bzh.zelyon.listdetail.fragments.CharacterFragment
-import bzh.zelyon.listdetail.fragments.LoadFragment
-import bzh.zelyon.listdetail.fragments.MainFragment
-import bzh.zelyon.listdetail.models.Character
-import bzh.zelyon.listdetail.models.House
-import bzh.zelyon.listdetail.models.Region
-import bzh.zelyon.listdetail.utils.API
-import bzh.zelyon.listdetail.utils.CallBack
-import bzh.zelyon.listdetail.utils.DB
+import bzh.zelyon.listdetail.R
+import bzh.zelyon.listdetail.util.isNougat
+import bzh.zelyon.listdetail.model.Character
+import bzh.zelyon.listdetail.model.House
+import bzh.zelyon.listdetail.model.Region
+import bzh.zelyon.listdetail.api.API
+import bzh.zelyon.listdetail.view.callback.CallBack
+import bzh.zelyon.listdetail.db.DB
 import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity() {

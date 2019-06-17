@@ -1,4 +1,4 @@
-package bzh.zelyon.listdetail.fragments
+package bzh.zelyon.listdetail.view.ui
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -6,8 +6,8 @@ import android.view.View
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
 import bzh.zelyon.listdetail.R
-import bzh.zelyon.listdetail.loadImageUrl
-import bzh.zelyon.listdetail.utils.DB
+import bzh.zelyon.listdetail.util.loadImageUrl
+import bzh.zelyon.listdetail.db.DB
 import kotlinx.android.synthetic.main.fragment_load.*
 import java.util.concurrent.Semaphore
 

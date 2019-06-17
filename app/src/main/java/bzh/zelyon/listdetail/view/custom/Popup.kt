@@ -1,4 +1,4 @@
-package bzh.zelyon.listdetail.utils
+package bzh.zelyon.listdetail.view.custom
 
 import android.app.AlertDialog
 import android.app.DatePickerDialog
@@ -15,8 +15,9 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import bzh.zelyon.listdetail.R
-import bzh.zelyon.listdetail.colorResToColorInt
-import bzh.zelyon.listdetail.init
+import bzh.zelyon.listdetail.util.colorResToColorInt
+import bzh.zelyon.listdetail.util.init
+import bzh.zelyon.listdetail.view.adapter.Adapter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton

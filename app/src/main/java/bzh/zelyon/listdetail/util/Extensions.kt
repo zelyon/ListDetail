@@ -1,4 +1,4 @@
-package bzh.zelyon.listdetail
+package bzh.zelyon.listdetail.util
 
 import android.Manifest
 import android.app.Activity
@@ -32,7 +32,10 @@ import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import bzh.zelyon.listdetail.models.Character
+import bzh.zelyon.listdetail.BuildConfig
+import bzh.zelyon.listdetail.R
+import bzh.zelyon.listdetail.model.Character
+import bzh.zelyon.listdetail.view.ui.MainActivity
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import io.reactivex.Observable
@@ -153,7 +156,7 @@ internal fun View.vibrate(step: Int = 0) {
 }
 
 internal fun Activity.goStore() {
-    startActivity(Intent(ACTION_VIEW, Uri.parse("market://details?id="+BuildConfig.APPLICATION_ID)))
+    startActivity(Intent(ACTION_VIEW, Uri.parse("market://details?id=" + BuildConfig.APPLICATION_ID)))
 }
 
 internal fun MainActivity.openCamera() {

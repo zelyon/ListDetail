@@ -1,4 +1,4 @@
-package bzh.zelyon.listdetail.views
+package bzh.zelyon.listdetail.view.custom
 
 import android.content.Context
 import android.graphics.Canvas

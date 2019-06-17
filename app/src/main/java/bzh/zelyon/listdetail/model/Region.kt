@@ -1,4 +1,4 @@
-package bzh.zelyon.listdetail.models
+package bzh.zelyon.listdetail.model
 
 import androidx.room.*
 import bzh.zelyon.listdetail.BuildConfig

@@ -1,10 +1,10 @@
-package bzh.zelyon.listdetail.models
+package bzh.zelyon.listdetail.model
 
 import androidx.room.*
 import androidx.sqlite.db.SimpleSQLiteQuery
 import androidx.sqlite.db.SupportSQLiteQuery
 import bzh.zelyon.listdetail.BuildConfig
-import bzh.zelyon.listdetail.utils.DB
+import bzh.zelyon.listdetail.db.DB
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 

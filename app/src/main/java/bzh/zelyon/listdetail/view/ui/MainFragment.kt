@@ -1,4 +1,4 @@
-package bzh.zelyon.listdetail.fragments
+package bzh.zelyon.listdetail.view.ui
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
@@ -16,11 +16,16 @@ import android.view.ViewAnimationUtils
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import bzh.zelyon.listdetail.*
-import bzh.zelyon.listdetail.models.Character
-import bzh.zelyon.listdetail.utils.Adapter
-import bzh.zelyon.listdetail.utils.DB
-import bzh.zelyon.listdetail.views.FilterView
-import bzh.zelyon.listdetail.views.FilterView.Item
+import bzh.zelyon.listdetail.model.Character
+import bzh.zelyon.listdetail.view.adapter.Adapter
+import bzh.zelyon.listdetail.db.DB
+import bzh.zelyon.listdetail.util.*
+import bzh.zelyon.listdetail.util.drawableResToDrawable
+import bzh.zelyon.listdetail.util.init
+import bzh.zelyon.listdetail.util.setImageUrl
+import bzh.zelyon.listdetail.util.share
+import bzh.zelyon.listdetail.view.custom.FilterView
+import bzh.zelyon.listdetail.view.custom.FilterView.Item
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.Target
 import kotlinx.android.synthetic.main.fragment_main.*

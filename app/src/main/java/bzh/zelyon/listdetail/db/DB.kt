@@ -1,12 +1,12 @@
-package bzh.zelyon.listdetail.utils
+package bzh.zelyon.listdetail.db
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import bzh.zelyon.listdetail.models.Character
-import bzh.zelyon.listdetail.models.House
-import bzh.zelyon.listdetail.models.Region
+import bzh.zelyon.listdetail.model.Character
+import bzh.zelyon.listdetail.model.House
+import bzh.zelyon.listdetail.model.Region
 
 @Database(entities = [Character::class, House::class, Region::class], version = 1)
 abstract class DB: RoomDatabase() {
