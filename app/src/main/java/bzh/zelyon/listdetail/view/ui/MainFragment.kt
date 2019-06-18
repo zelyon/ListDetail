@@ -79,7 +79,7 @@ class MainFragment: AbsToolBarFragment() {
         characterAdapter = CharacterAdapter(mainActivity, if (modeList) R.layout.item_list else R.layout.item_module)
         recycler_view.init(if (modeList) 1 else 3)
         recycler_view.adapter = characterAdapter
-        characterAdapter?.setDragNDrop(recycler_view)
+        characterAdapter?.recyclerViewDragNDrop = recycler_view
         action_mode_toolbar.setNavigationIcon(R.drawable.ic_close)
         action_mode_toolbar.inflateMenu(R.menu.character)
         action_mode_toolbar.setNavigationOnClickListener {
@@ -139,7 +139,7 @@ class MainFragment: AbsToolBarFragment() {
                 characterAdapter?.idItemLayout = if (modeList) R.layout.item_list else R.layout.item_module
                 recycler_view.init(if (modeList) 1 else 3)
                 recycler_view.adapter = characterAdapter
-                onMenuCreated()
+                onUpdateMenu()
             }
             R.id.search -> showSearchAndFilter(true)
         }
@@ -147,11 +147,9 @@ class MainFragment: AbsToolBarFragment() {
 
     override fun getTitle() = getString(R.string.fragment_main_title)
 
-    override fun showBack() = false
-
     override fun getIdMenu() = R.menu.main
 
-    override fun onMenuCreated() {
+    override fun onUpdateMenu() {
         menu?.findItem(R.id.mode)?.setIcon(if (modeList) R.drawable.ic_module else R.drawable.ic_list)
     }
 

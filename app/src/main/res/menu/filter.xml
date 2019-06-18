@@ -6,7 +6,7 @@
         android:id="@+id/restore"
         android:icon="@drawable/ic_restore"
         android:title="@string/fragment_main_menu_restore"
-        app:showAsAction="always"/>
+        app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/clear"

@@ -13,7 +13,7 @@ import java.util.concurrent.Semaphore
 
 class LoadFragment: AbsFragment() {
 
-    var animatedVectorDrawableCompat: AnimatedVectorDrawableCompat? = null
+    private var animatedVectorDrawableCompat: AnimatedVectorDrawableCompat? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

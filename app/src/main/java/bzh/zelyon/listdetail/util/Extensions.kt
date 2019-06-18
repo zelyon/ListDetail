@@ -2,6 +2,7 @@ package bzh.zelyon.listdetail.util
 
 import android.Manifest
 import android.app.Activity
+import android.app.ProgressDialog
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.Context
@@ -15,6 +16,7 @@ import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
+import android.os.VibrationEffect
 import android.os.Vibrator
 import android.provider.DocumentsContract
 import android.provider.MediaStore
@@ -28,6 +30,7 @@ import android.view.inputmethod.InputMethodManager
 import android.webkit.MimeTypeMap
 import android.webkit.URLUtil
 import android.widget.ImageView
+import android.widget.ProgressBar
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.recyclerview.widget.GridLayoutManager
@@ -35,6 +38,7 @@ import androidx.recyclerview.widget.RecyclerView
 import bzh.zelyon.listdetail.BuildConfig
 import bzh.zelyon.listdetail.R
 import bzh.zelyon.listdetail.model.Character
+import bzh.zelyon.listdetail.view.custom.Popup
 import bzh.zelyon.listdetail.view.ui.MainActivity
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
@@ -48,8 +52,15 @@ import java.io.FileOutputStream
 import java.net.URL
 
 internal fun isNougat() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+internal fun isOreo() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
 
 internal fun List<Character>.share(mainActivity: MainActivity) {
+
+    val padding = mainActivity.dpToPixel(64)
+    val progressBar = ProgressBar(mainActivity)
+    progressBar.isIndeterminate = true
+    progressBar.setPadding(0, padding, 0, padding)
+    Popup(mainActivity, customView = progressBar).show()
 
     mainActivity.checkPermissions(Runnable {
         val names = ArrayList<String>()
@@ -74,6 +85,9 @@ internal fun List<Character>.share(mainActivity: MainActivity) {
                 override fun onError(e: Throwable) {}
 
                 override fun onComplete() {
+
+                    Popup.dismiss()
+
                     mainActivity.startActivity(
                         Intent.createChooser(
                             Intent()
@@ -82,7 +96,7 @@ internal fun List<Character>.share(mainActivity: MainActivity) {
                                 .putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris)
                                 .setType("image/png")
                                 .setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION),
-                            mainActivity.getString(R.string.popup_share, "")
+                            mainActivity.getString(R.string.popup_share, names.joinToString(separator = ", "))
                         )
                     )
                 }
@@ -143,15 +157,19 @@ internal fun Activity.closeKeyBoard(view: View? = null) {
 }
 
 internal fun Context.vibrate() {
-    (getSystemService(Context.VIBRATOR_SERVICE) as Vibrator).vibrate(300L)
+    val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+    if (isOreo()) {
+        vibrator.vibrate(VibrationEffect.createOneShot(1000, VibrationEffect.DEFAULT_AMPLITUDE))
+    }
+    else {
+        vibrator.vibrate(1000)
+    }
 }
 
 internal fun View.vibrate(step: Int = 0) {
     val translations = arrayOf(0F, 25F, -25F, 25F, -25F, 15F, -15F, 5F, -5F, 0F)
     animate().translationX(translations[step]).setDuration(100L).withEndAction {
-        if (step < translations.size-2) {
-            vibrate(step + 1)
-        }
+        if (step < translations.size-1) vibrate(step + 1)
     }.start()
 }
 

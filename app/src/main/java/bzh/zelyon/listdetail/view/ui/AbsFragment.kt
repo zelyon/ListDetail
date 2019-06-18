@@ -37,5 +37,5 @@ abstract class AbsFragment: Fragment() {
 
     abstract fun getLayoutId(): Int
 
-    abstract fun onIdClick(id: Int)
+    open fun onIdClick(id: Int) {}
 }

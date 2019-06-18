@@ -1,5 +1,6 @@
 package bzh.zelyon.listdetail.view.custom
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
@@ -24,6 +25,7 @@ import com.google.android.material.button.MaterialButton
 import java.util.*
 
 class Popup (
+    val activity: Activity,
     val icon: Drawable? = null,
     val title: String? = null,
     val message: String? = null,
@@ -48,9 +50,9 @@ class Popup (
     val onDateSetListener: DatePickerDialog.OnDateSetListener? = null,
     val onTimeSetListener: TimePickerDialog.OnTimeSetListener? = null) {
 
-    public fun show(context: Context) {
+    fun show() {
         dismiss()
-        val alertDialogBuilder = AlertDialog.Builder(context)
+        val alertDialogBuilder = AlertDialog.Builder(activity)
         alertDialogBuilder.setCancelable(cancelable)
         icon?.let { icon ->
             alertDialogBuilder.setIcon(icon)
@@ -108,38 +110,38 @@ class Popup (
         }
     }
 
-    public fun showBottom(context: Context) {
+    fun showBottom() {
         dismissBottom()
-        bottomSheetDialog = BottomSheetDialog(context)
+        bottomSheetDialog = BottomSheetDialog(activity)
         bottomSheetDialog?.let {
             it.setCancelable(cancelable)
-            val layout = LinearLayout(context)
+            val layout = LinearLayout(activity)
             layout.orientation = LinearLayout.VERTICAL
             layout.gravity = Gravity.CENTER_HORIZONTAL
             icon?.let { icon ->
-                val imageView = ImageView(context)
+                val imageView = ImageView(activity)
                 imageView.setImageDrawable(icon)
-                layout.addView(imageView, ViewParams(context, 64, 64).centerHorizontalGravity().margins(12).linear())
+                layout.addView(imageView, ViewParams(activity, 64, 64).centerHorizontalGravity().margins(12).linear())
             }
             title?.let { title ->
-                val textView = TextView(context)
+                val textView = TextView(activity)
                 textView.gravity = Gravity.CENTER_HORIZONTAL
-                textView.setTextColor(context.colorResToColorInt(R.color.black))
+                textView.setTextColor(activity.colorResToColorInt(R.color.black))
                 textView.textSize = 18F
                 textView.typeface = Typeface.DEFAULT_BOLD
                 textView.text = title
-                layout.addView(textView, ViewParams(context).margins(12).linear())
+                layout.addView(textView, ViewParams(activity).margins(12).linear())
             }
             message?.let { message ->
-                val textView = TextView(context)
+                val textView = TextView(activity)
                 textView.gravity = Gravity.CENTER_HORIZONTAL
-                textView.setTextColor(context.colorResToColorInt(R.color.black))
+                textView.setTextColor(activity.colorResToColorInt(R.color.black))
                 textView.textSize = 14F
                 textView.text = message
-                layout.addView(textView, ViewParams(context).margins(12).linear())
+                layout.addView(textView, ViewParams(activity).margins(12).linear())
             }
             if (choicesText.isNotEmpty()) {
-                val adapter = object : Adapter<String>(context, android.R.layout.simple_list_item_1) {
+                val adapter = object : Adapter<String>(activity, android.R.layout.simple_list_item_1) {
                     override fun onItemFill(itemView: View, items: List<String>, position: Int) {
                         itemView.findViewById<TextView>(android.R.id.text1).text = items[position]
                     }
@@ -151,17 +153,17 @@ class Popup (
                     override fun onItemLongClick(itemView: View, items: List<String>, position: Int) {}
                 }
 
-                val recyclerView = RecyclerView(context)
+                val recyclerView = RecyclerView(activity)
                 recyclerView.init(1)
                 recyclerView.adapter = adapter
                 adapter.items = choicesText.toList()
-                layout.addView(recyclerView, ViewParams(context).margins(12).linear())
+                layout.addView(recyclerView, ViewParams(activity).margins(12).linear())
             }
             customView?.let { customView ->
                 layout.addView(customView)
             }
             positiveText?.let { positiveText ->
-                val materialButton = MaterialButton(context)
+                val materialButton = MaterialButton(activity)
                 materialButton.text = positiveText
                 materialButton.setOnClickListener {
                     positiveClick?.onClick(null)
@@ -169,10 +171,10 @@ class Popup (
                         bottomSheetDialog?.dismiss()
                     }
                 }
-                layout.addView(materialButton, ViewParams(context).margins(4).linear())
+                layout.addView(materialButton, ViewParams(activity).margins(4).linear())
             }
             negativeText?.let { negativeText ->
-                val materialButton = MaterialButton(context)
+                val materialButton = MaterialButton(activity)
                 materialButton.text = negativeText
                 materialButton.setOnClickListener {
                     negativeClick?.onClick(null)
@@ -180,10 +182,10 @@ class Popup (
                         bottomSheetDialog?.dismiss()
                     }
                 }
-                layout.addView(materialButton, ViewParams(context).margins(4).linear())
+                layout.addView(materialButton, ViewParams(activity).margins(4).linear())
             }
             neutralText?.let { neutralText ->
-                val materialButton = MaterialButton(context)
+                val materialButton = MaterialButton(activity)
                 materialButton.text = neutralText
                 materialButton.setOnClickListener {
                     neutralClick?.onClick(null)
@@ -191,7 +193,7 @@ class Popup (
                         bottomSheetDialog?.dismiss()
                     }
                 }
-                layout.addView(materialButton, ViewParams(context).margins(4).linear())
+                layout.addView(materialButton, ViewParams(activity).margins(4).linear())
             }
             it.setContentView(layout)
             onDismissListener?.let { listener ->
@@ -205,16 +207,16 @@ class Popup (
         }
     }
 
-    public fun dateTime(context: Context) {
+    fun dateTime() {
         val calendar = Calendar.getInstance()
         calendar.time = defaultDate ?: Date()
         val datePickerDialog = DatePickerDialog(
-            context,
+            activity,
             DatePickerDialog.OnDateSetListener { datePicker, year, month, dayOfMonth ->
                 onDateSetListener?.onDateSet(datePicker, year, month, dayOfMonth)
                 onTimeSetListener?.let { onTimeSetListener ->
                     val timePickerDialog = TimePickerDialog(
-                        context,
+                        activity,
                         onTimeSetListener,
                         calendar.get(Calendar.HOUR_OF_DAY),
                         calendar.get(Calendar.MINUTE),
@@ -316,10 +318,10 @@ class Popup (
     companion object {
         private var alertDialog: AlertDialog? = null
         private var bottomSheetDialog: BottomSheetDialog? = null
-        public fun dismiss() {
+        fun dismiss() {
             alertDialog?.dismiss()
         }
-        public fun dismissBottom() {
+        fun dismissBottom() {
             bottomSheetDialog?.dismiss()
         }
     }

@@ -43,9 +43,9 @@ class HouseFragment: AbsToolBarFragment() {
             }
     }
 
-    var house: House? = null
-    var region: Region? = null
-    var placeholder: Bitmap? = null
+    private var house: House? = null
+    private var region: Region? = null
+    private var placeholder: Bitmap? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,7 +67,7 @@ class HouseFragment: AbsToolBarFragment() {
         house?.let {
             image.transitionName = it.id.toString()
             image.setImageUrl(it.getImage(), if (placeholder != null) BitmapDrawable(mainActivity.resources, placeholder) else null)
-            view_pager.adapter = pagerAdapter
+            view_pager.adapter = PageAdapter()
             view_pager.offscreenPageLimit = Int.MAX_VALUE
             tab_layout.setupWithViewPager(view_pager)
         }
@@ -87,9 +87,7 @@ class HouseFragment: AbsToolBarFragment() {
 
     override fun getIdMenu() = R.menu.character
 
-    override fun onMenuCreated() {}
-
-    private val pagerAdapter = object : PagerAdapter() {
+    inner class PageAdapter : PagerAdapter() {
 
         override fun isViewFromObject(view: View, `object`: Any) = view === `object`
 

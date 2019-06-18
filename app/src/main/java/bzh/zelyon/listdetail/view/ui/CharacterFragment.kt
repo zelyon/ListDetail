@@ -28,9 +28,9 @@ class CharacterFragment: AbsToolBarFragment() {
             }
     }
 
-    var character: Character? = null
-    var house: House? = null
-    var placeholder: Bitmap? = null
+    private var character: Character? = null
+    private var house: House? = null
+    private var placeholder: Bitmap? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,6 +81,4 @@ class CharacterFragment: AbsToolBarFragment() {
     override fun showBack() = true
 
     override fun getIdMenu() = R.menu.character
-
-    override fun onMenuCreated() { }
 }

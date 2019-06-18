@@ -8,14 +8,20 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import java.util.*
 
-abstract class Adapter<T> (val context: Context, var idItemLayout: Int): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
-    private var dragAndDrop = false
+open class Adapter<T> (val context: Context, var idItemLayout: Int): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var items = listOf<T>()
         set(value) {
             field = value
             notifyDataSetChanged()
+        }
+
+    var recyclerViewDragNDrop: RecyclerView? = null
+        set(value) {
+            field = value
+            value?.let {
+                itemTouchHelper.attachToRecyclerView(it)
+            }
         }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = object : RecyclerView.ViewHolder(LayoutInflater.from(context).inflate(idItemLayout, parent, false)) {}
@@ -28,7 +34,7 @@ abstract class Adapter<T> (val context: Context, var idItemLayout: Int): Recycle
             onItemClick(viewHolder.itemView, items, position)
         }
         viewHolder.itemView.setOnLongClickListener {
-            if(dragAndDrop) {
+            if (recyclerViewDragNDrop != null) {
                 itemTouchHelper.startDrag(viewHolder)
             }
             else {
@@ -38,7 +44,7 @@ abstract class Adapter<T> (val context: Context, var idItemLayout: Int): Recycle
         }
     }
 
-    abstract fun onItemFill(itemView: View, items: List<T>, position: Int)
+    open fun onItemFill(itemView: View, items: List<T>, position: Int) {}
 
     open fun onItemClick(itemView: View, items: List<T>, position: Int) {}
 
@@ -49,11 +55,6 @@ abstract class Adapter<T> (val context: Context, var idItemLayout: Int): Recycle
     open fun onItemEndDrag(itemView: View) {}
 
     open fun onItemsSwap(items: List<T>) {}
-
-    fun setDragNDrop(recyclerView: RecyclerView) {
-        dragAndDrop = true
-        itemTouchHelper.attachToRecyclerView(recyclerView)
-    }
 
     private val itemTouchHelper = ItemTouchHelper(object : ItemTouchHelper.Callback(){
 

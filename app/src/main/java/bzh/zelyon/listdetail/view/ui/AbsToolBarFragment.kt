@@ -25,9 +25,11 @@ abstract class AbsToolBarFragment: AbsFragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(getIdMenu(), menu)
-        this.menu = menu
-        onMenuCreated()
+        if(getIdMenu() != -1) {
+            inflater.inflate(getIdMenu(), menu)
+            this.menu = menu
+            onUpdateMenu()
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -41,9 +43,9 @@ abstract class AbsToolBarFragment: AbsFragment() {
 
     abstract fun getTitle(): String
 
-    abstract fun showBack(): Boolean
+    open fun showBack() = false
 
-    abstract fun getIdMenu(): Int
+    open fun getIdMenu() = -1
 
-    abstract fun onMenuCreated()
+    open fun onUpdateMenu() {}
 }
