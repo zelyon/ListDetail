@@ -2,7 +2,6 @@ package bzh.zelyon.listdetail.util
 
 import android.Manifest
 import android.app.Activity
-import android.app.ProgressDialog
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.Context
@@ -21,10 +20,8 @@ import android.os.Vibrator
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.provider.OpenableColumns
-import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
-import androidx.core.graphics.ColorUtils
 import android.util.Patterns
+import android.util.TypedValue
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.webkit.MimeTypeMap
@@ -33,7 +30,11 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import androidx.core.graphics.ColorUtils
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import bzh.zelyon.listdetail.BuildConfig
 import bzh.zelyon.listdetail.R
@@ -65,7 +66,7 @@ internal fun List<Character>.share(mainActivity: MainActivity) {
     mainActivity.checkPermissions(Runnable {
         val names = ArrayList<String>()
         val uris = ArrayList<Uri>()
-        Observable.fromIterable(ArrayList<Character>(this))
+        Observable.fromIterable(toMutableList())
             .subscribeOn(Schedulers.io())
             .observeOn(Schedulers.io())
             .subscribe(object : Observer<Character> {
@@ -96,7 +97,7 @@ internal fun List<Character>.share(mainActivity: MainActivity) {
                                 .putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris)
                                 .setType("image/png")
                                 .setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION),
-                            mainActivity.getString(R.string.popup_share, names.joinToString(separator = ", "))
+                            ""
                         )
                     )
                 }
@@ -107,7 +108,7 @@ internal fun List<Character>.share(mainActivity: MainActivity) {
 internal fun RecyclerView.init(nbColumns: Int = 1) {
     setHasFixedSize(false)
     isNestedScrollingEnabled = false
-    layoutManager = GridLayoutManager(context, nbColumns)
+    layoutManager = if (nbColumns == 1) LinearLayoutManager(context) else GridLayoutManager(context, nbColumns)
 }
 
 internal fun ImageView.setImageUrl(url: String, placeholder: Drawable? = null) {
@@ -134,7 +135,7 @@ internal fun Context.dpToPixel(int: Int) = (int * this.resources.displayMetrics.
 internal fun Context.drawableResToDrawable(@DrawableRes drawableRes: Int, @ColorRes colorRes: Int? = null): Drawable {
     val result = ContextCompat.getDrawable(this, drawableRes) ?: ColorDrawable()
     colorRes?.let {
-        result.mutate().setColorFilter(this.colorResToColorInt(colorRes), PorterDuff.Mode.SRC_IN)
+        result.mutate().setColorFilter(colorResToColorInt(colorRes), PorterDuff.Mode.SRC_IN)
     }
     return result
 }
@@ -145,6 +146,34 @@ internal fun Context.colorResToColorInt(@ColorRes colorRes: Int, alpha: Float? =
         result = ColorUtils.setAlphaComponent(result, 255*alpha.toInt())
     }
     return result
+}
+
+//day : black, night : white
+internal fun Context.getTextColorPrimary(): Int {
+    val typedValue = TypedValue()
+    theme.resolveAttribute(android.R.attr.textColorPrimary, typedValue, true)
+    return typedValue.resourceId
+}
+
+//grey
+internal fun Context.getColorControlNormal(): Int {
+    val typedValue = TypedValue()
+    theme.resolveAttribute(R.attr.colorControlNormal, typedValue, true)
+    return typedValue.resourceId
+}
+
+//day : white, night : black
+internal fun Context.getColorSurface(): Int {
+    val typedValue = TypedValue()
+    theme.resolveAttribute(R.attr.colorSurface, typedValue, true)
+    return typedValue.resourceId
+}
+
+//day : black, night : white
+internal fun Context.getColorOnSurface(): Int {
+    val typedValue = TypedValue()
+    theme.resolveAttribute(R.attr.colorOnSurface, typedValue, true)
+    return typedValue.resourceId
 }
 
 internal fun Context.openKeyBoard(view: View? = null) {

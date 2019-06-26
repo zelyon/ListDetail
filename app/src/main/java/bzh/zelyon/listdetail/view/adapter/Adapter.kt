@@ -71,7 +71,7 @@ open class Adapter<T> (val context: Context, var idItemLayout: Int): RecyclerVie
         override fun onSwiped(p0: RecyclerView.ViewHolder, p1: Int) {}
 
         override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
-            if (actionState != ItemTouchHelper.ACTION_STATE_IDLE) {
+            if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
                 viewHolder?.let {
                     onItemStartDrag(it.itemView)
                 }

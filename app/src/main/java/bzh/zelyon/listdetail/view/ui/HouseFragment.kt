@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
-import androidx.core.widget.NestedScrollView
 import android.transition.TransitionInflater
 import android.view.Gravity
 import android.view.View
@@ -12,18 +11,19 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.PagerAdapter
-import bzh.zelyon.listdetail.*
+import bzh.zelyon.listdetail.R
+import bzh.zelyon.listdetail.db.DB
 import bzh.zelyon.listdetail.model.Character
 import bzh.zelyon.listdetail.model.House
 import bzh.zelyon.listdetail.model.Region
-import bzh.zelyon.listdetail.view.adapter.Adapter
-import bzh.zelyon.listdetail.db.DB
 import bzh.zelyon.listdetail.util.colorResToColorInt
 import bzh.zelyon.listdetail.util.init
 import bzh.zelyon.listdetail.util.setImageUrl
 import bzh.zelyon.listdetail.util.share
+import bzh.zelyon.listdetail.view.adapter.Adapter
 import bzh.zelyon.listdetail.view.custom.ViewParams
 import kotlinx.android.synthetic.main.fragment_house.*
 
@@ -110,22 +110,18 @@ class HouseFragment: AbsToolBarFragment() {
                     house?.let {
                         val wrecked = AppCompatTextView(mainActivity)
                         wrecked.text = getString(R.string.fragment_house_wrecked)
-                        wrecked.setTextColor(mainActivity.colorResToColorInt(R.color.white))
                         wrecked.visibility = if (it.wrecked) View.VISIBLE else View.GONE
                         linearLayout.addView(wrecked, ViewParams(mainActivity).margins(8).linear())
                         val city = AppCompatTextView(mainActivity)
                         city.text = getString(R.string.fragment_house_capital, it.city)
-                        city.setTextColor(mainActivity.colorResToColorInt(R.color.white))
                         city.visibility = if (it.city.isNotBlank()) View.VISIBLE else View.GONE
                         linearLayout.addView(city, ViewParams(mainActivity).margins(8).linear())
                         val devise = AppCompatTextView(mainActivity)
                         devise.text = getString(R.string.fragment_house_devise, it.devise)
-                        devise.setTextColor(mainActivity.colorResToColorInt(R.color.white))
                         devise.visibility = if (it.devise.isNotBlank()) View.VISIBLE else View.GONE
                         linearLayout.addView(devise, ViewParams(mainActivity).margins(8).linear())
                         val proverb = AppCompatTextView(mainActivity)
                         proverb.text = getString(R.string.fragment_house_proverb, it.proverb)
-                        proverb.setTextColor(mainActivity.colorResToColorInt(R.color.white))
                         proverb.visibility = if (it.proverb != null) View.VISIBLE else View.GONE
                         linearLayout.addView(proverb, ViewParams(mainActivity).margins(8).linear())
                     }
@@ -144,7 +140,6 @@ class HouseFragment: AbsToolBarFragment() {
                     region?.let {
                         val regionName = AppCompatTextView(mainActivity)
                         regionName.text = it.label
-                        regionName.setTextColor(mainActivity.colorResToColorInt(R.color.white))
                         regionName.textSize = 16f
                         regionName.gravity = Gravity.CENTER
                         linearLayout.addView(regionName, ViewParams(mainActivity).margins(8).centerGravity().linear())

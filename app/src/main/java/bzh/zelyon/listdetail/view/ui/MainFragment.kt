@@ -15,15 +15,11 @@ import android.view.View
 import android.view.ViewAnimationUtils
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
-import bzh.zelyon.listdetail.*
-import bzh.zelyon.listdetail.model.Character
-import bzh.zelyon.listdetail.view.adapter.Adapter
+import bzh.zelyon.listdetail.R
 import bzh.zelyon.listdetail.db.DB
+import bzh.zelyon.listdetail.model.Character
 import bzh.zelyon.listdetail.util.*
-import bzh.zelyon.listdetail.util.drawableResToDrawable
-import bzh.zelyon.listdetail.util.init
-import bzh.zelyon.listdetail.util.setImageUrl
-import bzh.zelyon.listdetail.util.share
+import bzh.zelyon.listdetail.view.adapter.Adapter
 import bzh.zelyon.listdetail.view.custom.FilterView
 import bzh.zelyon.listdetail.view.custom.FilterView.Item
 import com.squareup.picasso.Picasso
@@ -62,8 +58,8 @@ class MainFragment: AbsToolBarFragment() {
 
         savedInstanceState?.let {
             searchApply = it.getString(SEARCH_APPLY_SAVE) ?: ""
-            housesApply = it.getLongArray(HOUSES_APPLY_SAVE).toList()
-            othersApply = it.getStringArray(OTHERS_APPLY_SAVE).toList()
+            housesApply = it.getLongArray(HOUSES_APPLY_SAVE)?.toList() ?: listOf()
+            othersApply = it.getStringArray(OTHERS_APPLY_SAVE)?.toList() ?: listOf()
         }
     }
 
@@ -179,11 +175,12 @@ class MainFragment: AbsToolBarFragment() {
     }
 
     private fun loadOthers() {
+
         (other_filter_view as FilterView<String>).load(listOf(
-            Item(Character.GENDER_MALE, getString(R.string.fragment_character_gender_man), mainActivity.drawableResToDrawable(R.drawable.ic_male, R.color.black)),
-            Item(Character.GENDER_FEMALE, getString(R.string.fragment_character_gender_woman), mainActivity.drawableResToDrawable( R.drawable.ic_female, R.color.black)),
-            Item(Character.ALIVE, getString(R.string.fragment_character_alive_man), mainActivity.drawableResToDrawable(R.drawable.ic_alive, R.color.black)),
-            Item(Character.DEAD, getString(R.string.fragment_character_dead_man), mainActivity.drawableResToDrawable(R.drawable.ic_dead, R.color.black))
+            Item(Character.GENDER_MALE, getString(R.string.fragment_character_gender_man), mainActivity.drawableResToDrawable(R.drawable.ic_male, mainActivity.getTextColorPrimary())),
+            Item(Character.GENDER_FEMALE, getString(R.string.fragment_character_gender_woman), mainActivity.drawableResToDrawable( R.drawable.ic_female, mainActivity.getTextColorPrimary())),
+            Item(Character.ALIVE, getString(R.string.fragment_character_alive_man), mainActivity.drawableResToDrawable(R.drawable.ic_alive, mainActivity.getTextColorPrimary())),
+            Item(Character.DEAD, getString(R.string.fragment_character_dead_man), mainActivity.drawableResToDrawable(R.drawable.ic_dead, mainActivity.getTextColorPrimary()))
         ), othersApply)
     }
 

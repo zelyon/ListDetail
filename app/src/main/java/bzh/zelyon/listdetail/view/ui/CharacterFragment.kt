@@ -5,11 +5,11 @@ import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.view.View
 import bzh.zelyon.listdetail.R
+import bzh.zelyon.listdetail.db.DB
 import bzh.zelyon.listdetail.model.Character
 import bzh.zelyon.listdetail.model.House
 import bzh.zelyon.listdetail.util.setImageUrl
 import bzh.zelyon.listdetail.util.share
-import bzh.zelyon.listdetail.db.DB
 import kotlinx.android.synthetic.main.fragment_character.*
 
 class CharacterFragment: AbsToolBarFragment() {

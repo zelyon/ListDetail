@@ -4,7 +4,6 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.content.Context
 import android.content.DialogInterface
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
@@ -15,8 +14,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import bzh.zelyon.listdetail.R
-import bzh.zelyon.listdetail.util.colorResToColorInt
 import bzh.zelyon.listdetail.util.init
 import bzh.zelyon.listdetail.view.adapter.Adapter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -126,7 +123,6 @@ class Popup (
             title?.let { title ->
                 val textView = TextView(activity)
                 textView.gravity = Gravity.CENTER_HORIZONTAL
-                textView.setTextColor(activity.colorResToColorInt(R.color.black))
                 textView.textSize = 18F
                 textView.typeface = Typeface.DEFAULT_BOLD
                 textView.text = title
@@ -135,7 +131,6 @@ class Popup (
             message?.let { message ->
                 val textView = TextView(activity)
                 textView.gravity = Gravity.CENTER_HORIZONTAL
-                textView.setTextColor(activity.colorResToColorInt(R.color.black))
                 textView.textSize = 14F
                 textView.text = message
                 layout.addView(textView, ViewParams(activity).margins(12).linear())

@@ -23,18 +23,25 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"/>
 
+        <View
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/name"
+                android:layout_alignParentBottom="true"
+                android:layout_centerInParent="true"
+                android:background="?attr/colorSurface"
+                android:alpha="0.6"/>
+
         <TextView
-            android:id="@+id/name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="4dp"
-            android:gravity="center"
-            android:layout_alignParentBottom="true"
-            android:layout_centerInParent="true"
-            android:lines="2"
-            android:textSize="18sp"
-            android:textColor="@color/white"
-            android:background="@color/black_transparent"/>
+                android:id="@+id/name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:gravity="center"
+                android:layout_alignParentBottom="true"
+                android:layout_centerInParent="true"
+                android:lines="2"
+                android:textSize="18sp"/>
 
     </RelativeLayout>
 

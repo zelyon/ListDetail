@@ -6,21 +6,21 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkRequest
 import android.os.Bundle
-import androidx.core.app.ActivityCompat
 import android.view.View
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import bzh.zelyon.listdetail.R
-import bzh.zelyon.listdetail.util.isNougat
+import bzh.zelyon.listdetail.api.API
+import bzh.zelyon.listdetail.db.DB
 import bzh.zelyon.listdetail.model.Character
 import bzh.zelyon.listdetail.model.House
 import bzh.zelyon.listdetail.model.Region
-import bzh.zelyon.listdetail.api.API
+import bzh.zelyon.listdetail.util.isNougat
 import bzh.zelyon.listdetail.view.callback.CallBack
-import bzh.zelyon.listdetail.db.DB
 import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity() {
