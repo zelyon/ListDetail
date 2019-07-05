@@ -10,7 +10,7 @@ data class Region(
     @PrimaryKey @ColumnInfo(name = "id") @SerializedName("id") @Expose var id: Long = 0,
     @ColumnInfo(name = "label") @SerializedName("label") @Expose var label: String = "",
     @ColumnInfo(name = "image") @SerializedName("image") @Expose var image: String = ""
-){
+) {
 
     fun getMap() = BuildConfig.baseUrl + URL + "map/" + image
 

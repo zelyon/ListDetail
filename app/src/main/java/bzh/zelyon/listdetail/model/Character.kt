@@ -31,7 +31,7 @@ data class Character(
         const val DEAD = "DEAD"
         const val ALIVE = "ALIVE"
 
-        fun getByFilters(name: String? = null, houses: List<Long>? = null, man: Boolean? = null, dead: Boolean? = null) : List<Character> {
+        fun getByFilters(name: String? = null, houses: List<Long>? = null, man: Boolean? = null, dead: Boolean? = null): List<Character> {
             var query = "SELECT * FROM character "
             val args = mutableListOf<String>()
             val conditions= mutableListOf<String>()
@@ -91,9 +91,9 @@ data class Character(
                 "FROM character " +
                 "WHERE id = :id " +
                 "LIMIT 1")
-        fun getById(id: Long) : Character
+        fun getById(id: Long): Character
 
         @RawQuery
-        fun getByFilters(supportSQLiteQuery: SupportSQLiteQuery) : List<Character>
+        fun getByFilters(supportSQLiteQuery: SupportSQLiteQuery): List<Character>
     }
 }

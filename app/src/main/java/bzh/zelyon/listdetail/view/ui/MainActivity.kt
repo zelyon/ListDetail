@@ -174,7 +174,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    class ConnectionLiveData(activity: MainActivity) : LiveData<Boolean>() {
+    class ConnectionLiveData(activity: MainActivity): LiveData<Boolean>() {
 
         private var connectivityManager: ConnectivityManager = activity.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
 

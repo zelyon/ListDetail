@@ -6,7 +6,7 @@ import android.graphics.Path
 import android.util.AttributeSet
 import android.widget.FrameLayout
 
-class CircleView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : FrameLayout(context, attrs, defStyleAttr) {
+class CircleView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0): FrameLayout(context, attrs, defStyleAttr) {
 
     var path: Path = Path()
 

@@ -2,7 +2,6 @@ package bzh.zelyon.listdetail.view.ui
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
-import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
@@ -19,9 +18,9 @@ import bzh.zelyon.listdetail.R
 import bzh.zelyon.listdetail.db.DB
 import bzh.zelyon.listdetail.model.Character
 import bzh.zelyon.listdetail.util.*
-import bzh.zelyon.listdetail.view.adapter.Adapter
 import bzh.zelyon.listdetail.view.custom.FilterView
 import bzh.zelyon.listdetail.view.custom.FilterView.Item
+import bzh.zelyon.listdetail.view.custom.ItemsView
 import com.squareup.picasso.Picasso
 import com.squareup.picasso.Target
 import kotlinx.android.synthetic.main.fragment_main.*
@@ -42,8 +41,6 @@ class MainFragment: AbsToolBarFragment() {
     private var searchApply = ""
     private var housesApply = listOf<Long>()
     private var othersApply = listOf<String>()
-
-    private var characterAdapter: CharacterAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,10 +69,64 @@ class MainFragment: AbsToolBarFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        characterAdapter = CharacterAdapter(mainActivity, if (modeList) R.layout.item_list else R.layout.item_module)
-        recycler_view.init(if (modeList) 1 else 3)
-        recycler_view.adapter = characterAdapter
-        characterAdapter?.recyclerViewDragNDrop = recycler_view
+        items_view.setItemsView(if (modeList) 1 else 3, if (modeList) R.layout.item_list else R.layout.item_module)
+        items_view.isDragNDrop = true
+        (items_view as ItemsView<Character>).itemsListener = object : ItemsView.ItemsListener<Character> {
+            override fun onItemFill(itemView: View, items: List<Character>, position: Int) {
+                val character= items[position]
+                val characterIsSelected = selectedCharacters.contains(character)
+                val image= itemView.findViewById<AppCompatImageView>(R.id.image)
+                image.visibility = if (modeList && characterIsSelected) View.GONE else View.VISIBLE
+                image.scaleX = if (!modeList && characterIsSelected) .8f else 1f
+                image.scaleY = if (!modeList && characterIsSelected) .8f else 1f
+                image.transitionName = character.id.toString()
+                image.setImageUrl(character.getThumbnail())
+                val badge = itemView.findViewById<AppCompatImageView>(R.id.badge)
+                badge.visibility = if (modeList && characterIsSelected || !modeList && !selectedCharacters.isEmpty()) View.VISIBLE else View.GONE
+                badge.setImageResource(if (characterIsSelected) R.drawable.ic_check else R.drawable.ic_uncheck)
+                badge.setColorFilter(mainActivity.colorResToColorInt(if (characterIsSelected) R.color.green else if (modeList) R.color.black else R.color.white))
+                itemView.findViewById<AppCompatTextView>(R.id.name).text = character.name
+            }
+            override fun onItemClick(itemView: View, items: List<Character>, position: Int) {
+                val character= items[position]
+                if (action_mode_toolbar.visibility == View.GONE) {
+                    val image= itemView.findViewById<AppCompatImageView>(R.id.image)
+                    mainActivity.setFragment(CharacterFragment.newInstance(character.id, (image.drawable as BitmapDrawable).bitmap), image)
+                } else {
+                    selectCharacter(itemView, character)
+                }
+            }
+            override fun onItemLongClick(itemView: View, items: List<Character>, position: Int) {
+                selectCharacter(itemView, items[position])
+            }
+            override fun onItemStartDrag(itemView: View) {
+                itemView.animate().scaleY(0.8f).scaleX(0.8f).alpha(0.8f).duration = 200L
+            }
+            override fun onItemEndDrag(itemView: View) {
+                itemView.animate().scaleY(1f).scaleX(1f).alpha(1f).duration = 200L
+            }
+            override fun onItemsSwap(items: List<Character>) {
+                for (i in 0 until items.size) {
+                    items[i].position = i.toLong()
+                }
+                DB.getCharacterDao().update(items)
+            }
+            private fun selectCharacter(itemView: View, character: Character) {
+                if (selectedCharacters.contains(character)) {
+                    selectedCharacters.remove(character)
+                } else {
+                    selectedCharacters.add(character)
+                }
+                if (modeList) {
+                    showActionMode(selectedCharacters.isNotEmpty())
+                } else {
+                    val scale= if (selectedCharacters.contains(character)) .8f else 1f
+                    itemView.findViewById<AppCompatImageView>(R.id.image).animate().scaleY(scale).scaleX(scale).setDuration(200L).withEndAction {
+                        showActionMode(selectedCharacters.isNotEmpty())
+                    }
+                }
+            }
+        }
         action_mode_toolbar.setNavigationIcon(R.drawable.ic_close)
         action_mode_toolbar.inflateMenu(R.menu.character)
         action_mode_toolbar.setNavigationOnClickListener {
@@ -132,9 +183,7 @@ class MainFragment: AbsToolBarFragment() {
             R.id.mode -> {
                 modeList = !modeList
                 sharedPreferences?.edit()?.putBoolean(LIST, modeList)?.apply()
-                characterAdapter?.idItemLayout = if (modeList) R.layout.item_list else R.layout.item_module
-                recycler_view.init(if (modeList) 1 else 3)
-                recycler_view.adapter = characterAdapter
+                items_view.setItemsView(if (modeList) 1 else 3, if (modeList) R.layout.item_list else R.layout.item_module)
                 onUpdateMenu()
             }
             R.id.search -> showSearchAndFilter(true)
@@ -154,28 +203,24 @@ class MainFragment: AbsToolBarFragment() {
         val female = othersApply.contains(Character.GENDER_FEMALE)
         val dead = othersApply.contains(Character.DEAD)
         val alive = othersApply.contains(Character.ALIVE)
-        characterAdapter?.items = Character.getByFilters(searchApply, housesApply, if (man != female) man else null, if (dead != alive) dead else null)
+        (items_view as ItemsView<Character>).items = Character.getByFilters(searchApply, housesApply, if (man != female) man else null, if (dead != alive) dead else null)
     }
 
     fun loadHouses() {
         val items= mutableListOf<Item<Long>>()
         for (house in DB.getHouseDao().getAll()) {
             Picasso.get().load(house.getThumbnail()).placeholder(GradientDrawable()).into(object : Target {
-
                 override fun onBitmapLoaded(bitmap: Bitmap, from: Picasso.LoadedFrom) {
                     items.add(Item(house.id, house.label, BitmapDrawable(resources, bitmap)))
                     (house_filter_view as FilterView<Long>).load(items, housesApply)
                 }
-
                 override fun onBitmapFailed(e: Exception, errorDrawable: Drawable?) {}
-
                 override fun onPrepareLoad(placeHolderDrawable: Drawable) {}
             })
         }
     }
 
     private fun loadOthers() {
-
         (other_filter_view as FilterView<String>).load(listOf(
             Item(Character.GENDER_MALE, getString(R.string.fragment_character_gender_man), mainActivity.drawableResToDrawable(R.drawable.ic_male, mainActivity.getTextColorPrimary())),
             Item(Character.GENDER_FEMALE, getString(R.string.fragment_character_gender_woman), mainActivity.drawableResToDrawable( R.drawable.ic_female, mainActivity.getTextColorPrimary())),
@@ -189,7 +234,6 @@ class MainFragment: AbsToolBarFragment() {
         val radius = Math.sqrt((filter_layout.height * filter_layout.height + filter_layout.height * filter_layout.height).toDouble()).toFloat()
         val circularReveal= ViewAnimationUtils.createCircularReveal(filter_layout, filter_layout.height,0, if (show) 0f else radius, if (show) radius else 0f).setDuration(600)
         circularReveal.addListener(object : AnimatorListenerAdapter() {
-
             override fun onAnimationEnd(animation: Animator) {
                 super.onAnimationEnd(animation)
                 filter_layout.visibility = if (show) View.VISIBLE else View.INVISIBLE
@@ -205,70 +249,6 @@ class MainFragment: AbsToolBarFragment() {
         } else {
             selectedCharacters.clear()
         }
-        characterAdapter?.notifyDataSetChanged()
-    }
-
-    inner class CharacterAdapter constructor(context: Context, idItemLayout: Int) : Adapter<Character>(context, idItemLayout) {
-
-        override fun onItemFill(itemView: View, items: List<Character>, position: Int) {
-            val character= items[position]
-            val characterIsSelected = selectedCharacters.contains(character)
-            val image= itemView.findViewById<AppCompatImageView>(R.id.image)
-            image.visibility = if (modeList && characterIsSelected) View.GONE else View.VISIBLE
-            image.scaleX = if (!modeList && characterIsSelected) .8f else 1f
-            image.scaleY = if (!modeList && characterIsSelected) .8f else 1f
-            image.transitionName = character.id.toString()
-            image.setImageUrl(character.getThumbnail())
-            val badge = itemView.findViewById<AppCompatImageView>(R.id.badge)
-            badge.visibility = if (modeList && characterIsSelected || !modeList && !selectedCharacters.isEmpty()) View.VISIBLE else View.GONE
-            badge.setImageResource(if (characterIsSelected) R.drawable.ic_check else R.drawable.ic_uncheck)
-            badge.setColorFilter(mainActivity.colorResToColorInt(if (characterIsSelected) R.color.green else if (modeList) R.color.black else R.color.white))
-            itemView.findViewById<AppCompatTextView>(R.id.name).text = character.name
-        }
-
-        override fun onItemClick(itemView: View, items: List<Character>, position: Int) {
-            val character= items[position]
-            if (action_mode_toolbar.visibility == View.GONE) {
-                val image= itemView.findViewById<AppCompatImageView>(R.id.image)
-                mainActivity.setFragment(CharacterFragment.newInstance(character.id, (image.drawable as BitmapDrawable).bitmap), image)
-            } else {
-                selectCharacter(itemView, character)
-            }
-        }
-
-        override fun onItemLongClick(itemView: View, items: List<Character>, position: Int) {
-            selectCharacter(itemView, items[position])
-        }
-
-        override fun onItemStartDrag(itemView: View) {
-            itemView.animate().scaleY(0.8f).scaleX(0.8f).alpha(0.8f).duration = 200L
-        }
-
-        override fun onItemEndDrag(itemView: View) {
-            itemView.animate().scaleY(1f).scaleX(1f).alpha(1f).duration = 200L
-        }
-
-        override fun onItemsSwap(items: List<Character>) {
-            for(i in 0 until items.size) {
-                items[i].position = i.toLong()
-            }
-            DB.getCharacterDao().update(items)
-        }
-
-        private fun selectCharacter(itemView: View, character: Character) {
-            if (selectedCharacters.contains(character)) {
-                selectedCharacters.remove(character)
-            } else {
-                selectedCharacters.add(character)
-            }
-            if (modeList) {
-                showActionMode(selectedCharacters.isNotEmpty())
-            } else {
-                val scale= if (selectedCharacters.contains(character)) .8f else 1f
-                itemView.findViewById<AppCompatImageView>(R.id.image).animate().scaleY(scale).scaleX(scale).setDuration(200L).withEndAction {
-                    showActionMode(selectedCharacters.isNotEmpty())
-                }
-            }
-        }
+        items_view.refresh()
     }
 }

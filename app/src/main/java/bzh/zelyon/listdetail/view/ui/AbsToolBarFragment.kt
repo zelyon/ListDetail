@@ -25,7 +25,7 @@ abstract class AbsToolBarFragment: AbsFragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        if(getIdMenu() != -1) {
+        if (getIdMenu() != -1) {
             inflater.inflate(getIdMenu(), menu)
             this.menu = menu
             onUpdateMenu()

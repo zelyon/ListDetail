@@ -13,9 +13,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.recyclerview.widget.RecyclerView
-import bzh.zelyon.listdetail.util.init
-import bzh.zelyon.listdetail.view.adapter.Adapter
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
@@ -49,69 +46,68 @@ class Popup (
 
     fun show() {
         dismiss()
-        val alertDialogBuilder = AlertDialog.Builder(activity)
-        alertDialogBuilder.setCancelable(cancelable)
-        icon?.let { icon ->
-            alertDialogBuilder.setIcon(icon)
-        }
-        title?.let { title ->
-            alertDialogBuilder.setTitle(title)
-        }
-        message?.let { message ->
-            alertDialogBuilder.setMessage(message)
-        }
-        positiveText?.let { positiveText ->
-            alertDialogBuilder.setPositiveButton(positiveText) { _, _ ->
-                positiveClick?.onClick(null)
+        val alertDialogBuilder = AlertDialog.Builder(activity).apply {
+            setCancelable(cancelable)
+            icon?.let { icon ->
+                setIcon(icon)
+            }
+            title?.let { title ->
+                setTitle(title)
+            }
+            message?.let { message ->
+                setMessage(message)
+            }
+            positiveText?.let { positiveText ->
+                setPositiveButton(positiveText) { _, _ ->
+                    positiveClick?.onClick(null)
+                }
+            }
+            negativeText?.let { negativeText ->
+                setPositiveButton(negativeText) { _, _ ->
+                    negativeClick?.onClick(null)
+                }
+            }
+            neutralText?.let { neutralText ->
+                setPositiveButton(neutralText) { _, _ ->
+                    neutralClick?.onClick(null)
+                }
+            }
+            if (choicesText.isNotEmpty()) {
+                setItems(choicesText) { _, which ->
+                    choicesClick[which].onClick(null)
+                }
             }
         }
-        negativeText?.let { negativeText ->
-            alertDialogBuilder.setPositiveButton(negativeText) { _, _ ->
-                negativeClick?.onClick(null)
-            }
-        }
-        neutralText?.let { neutralText ->
-            alertDialogBuilder.setPositiveButton(neutralText) { _, _ ->
-                neutralClick?.onClick(null)
-            }
-        }
-        if (choicesText.isNotEmpty()) {
-            alertDialogBuilder.setItems(choicesText) { _, which ->
-                choicesClick[which].onClick(null)
-            }
-        }
-        alertDialog = alertDialogBuilder.create()
-        alertDialog?.let {
+        alertDialog = alertDialogBuilder.create().apply {
             customView?.let { customView ->
                 if (customView.parent != null) {
                     (customView.parent as ViewGroup).removeAllViews()
                 }
-                it.setView(customView)
+                setView(customView)
             }
             onDismissListener?.let { listener ->
-                it.setOnDismissListener(listener)
+                setOnDismissListener(listener)
             }
-            it.setOnShowListener { listener ->
+            setOnShowListener { listener ->
                 onShowListener?.onShow(listener)
                 if (!positiveDismiss) {
-                    it.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(positiveClick)
+                    getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(positiveClick)
                 }
                 if (!negativeDismiss) {
-                    it.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(negativeClick)
+                    getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(negativeClick)
                 }
                 if (!neutralDismiss) {
-                    it.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(neutralClick)
+                    getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(neutralClick)
                 }
             }
-            it.show()
         }
+        alertDialog?.show()
     }
 
     fun showBottom() {
         dismissBottom()
-        bottomSheetDialog = BottomSheetDialog(activity)
-        bottomSheetDialog?.let {
-            it.setCancelable(cancelable)
+        bottomSheetDialog = BottomSheetDialog(activity).apply {
+            setCancelable(cancelable)
             val layout = LinearLayout(activity)
             layout.orientation = LinearLayout.VERTICAL
             layout.gravity = Gravity.CENTER_HORIZONTAL
@@ -136,23 +132,23 @@ class Popup (
                 layout.addView(textView, ViewParams(activity).margins(12).linear())
             }
             if (choicesText.isNotEmpty()) {
-                val adapter = object : Adapter<String>(activity, android.R.layout.simple_list_item_1) {
+
+                val itemsView = ItemsView<String>(activity)
+                itemsView.items = choicesText.toList()
+                itemsView.itemsListener = object : ItemsView.ItemsListener<String> {
                     override fun onItemFill(itemView: View, items: List<String>, position: Int) {
                         itemView.findViewById<TextView>(android.R.id.text1).text = items[position]
                     }
-
                     override fun onItemClick(itemView: View, items: List<String>, position: Int) {
                         choicesClick[position].onClick(null)
                     }
-
                     override fun onItemLongClick(itemView: View, items: List<String>, position: Int) {}
+                    override fun onItemStartDrag(itemView: View) {}
+                    override fun onItemEndDrag(itemView: View) {}
+                    override fun onItemsSwap(items: List<String>) {}
                 }
 
-                val recyclerView = RecyclerView(activity)
-                recyclerView.init(1)
-                recyclerView.adapter = adapter
-                adapter.items = choicesText.toList()
-                layout.addView(recyclerView, ViewParams(activity).margins(12).linear())
+                layout.addView(itemsView, ViewParams(activity).margins(12).linear())
             }
             customView?.let { customView ->
                 layout.addView(customView)
@@ -190,16 +186,16 @@ class Popup (
                 }
                 layout.addView(materialButton, ViewParams(activity).margins(4).linear())
             }
-            it.setContentView(layout)
+            setContentView(layout)
             onDismissListener?.let { listener ->
-                it.setOnDismissListener(listener)
+                setOnDismissListener(listener)
             }
-            it.setOnShowListener { listener ->
+            setOnShowListener { listener ->
                 onShowListener?.onShow(listener)
                 BottomSheetBehavior.from(layout.parent as View).state = BottomSheetBehavior.STATE_EXPANDED
             }
-            it.show()
         }
+        bottomSheetDialog?.show()
     }
 
     fun dateTime() {
@@ -257,57 +253,57 @@ class Popup (
             calendar.get(Calendar.YEAR),
             calendar.get(Calendar.MONTH),
             calendar.get(Calendar.DAY_OF_MONTH)
-        )
-        datePickerDialog.setCancelable(cancelable)
-        icon?.let { icon ->
-            datePickerDialog.setIcon(icon)
-        }
-        title?.let { title ->
-            datePickerDialog.setTitle(title)
-        }
-        message?.let { message ->
-            datePickerDialog.setMessage(message)
-        }
-        positiveText?.let { positiveText ->
-            datePickerDialog.setButton(DialogInterface.BUTTON_POSITIVE, positiveText) { dialog, _ ->
-                positiveClick?.onClick(null)
-                if (positiveDismiss) {
-                    dialog.dismiss()
+        ).apply {
+            setCancelable(cancelable)
+            icon?.let { icon ->
+                setIcon(icon)
+            }
+            title?.let { title ->
+                setTitle(title)
+            }
+            message?.let { message ->
+                setMessage(message)
+            }
+            positiveText?.let { positiveText ->
+                setButton(DialogInterface.BUTTON_POSITIVE, positiveText) { dialog, _ ->
+                    positiveClick?.onClick(null)
+                    if (positiveDismiss) {
+                        dialog.dismiss()
+                    }
                 }
             }
-        }
-        negativeText?.let { negativeText ->
-            datePickerDialog.setButton(DialogInterface.BUTTON_NEGATIVE, negativeText) { dialog, _ ->
-                negativeClick?.onClick(null)
-                if (negativeDismiss) {
-                    dialog.dismiss()
+            negativeText?.let { negativeText ->
+                setButton(DialogInterface.BUTTON_NEGATIVE, negativeText) { dialog, _ ->
+                    negativeClick?.onClick(null)
+                    if (negativeDismiss) {
+                        dialog.dismiss()
+                    }
                 }
             }
-        }
-        neutralText?.let { neutralText ->
-            datePickerDialog.setButton(DialogInterface.BUTTON_NEUTRAL, neutralText) { dialog, _ ->
-                neutralClick?.onClick(null)
-                if (neutralDismiss) {
-                    dialog.dismiss()
+            neutralText?.let { neutralText ->
+                setButton(DialogInterface.BUTTON_NEUTRAL, neutralText) { dialog, _ ->
+                    neutralClick?.onClick(null)
+                    if (neutralDismiss) {
+                        dialog.dismiss()
+                    }
                 }
             }
-        }
-        customView?.let { customView ->
-            datePickerDialog.setContentView(customView)
-        }
-        onDismissListener?.let { listener ->
-            datePickerDialog.setOnDismissListener(listener)
-        }
-        onShowListener?.let { listener ->
-            datePickerDialog.setOnShowListener(listener)
-        }
-        minDate?.let { minDate ->
-            datePickerDialog.datePicker.minDate = minDate.time
-        }
-        maxDate?.let { maxDate ->
-            datePickerDialog.datePicker.minDate = maxDate.time
-        }
-        datePickerDialog.show()
+            customView?.let { customView ->
+                setContentView(customView)
+            }
+            onDismissListener?.let { listener ->
+                setOnDismissListener(listener)
+            }
+            onShowListener?.let { listener ->
+                setOnShowListener(listener)
+            }
+            minDate?.let { minDate ->
+                datePicker.minDate = minDate.time
+            }
+            maxDate?.let { maxDate ->
+                datePicker.minDate = maxDate.time
+            }
+        }.show()
     }
 
     companion object {

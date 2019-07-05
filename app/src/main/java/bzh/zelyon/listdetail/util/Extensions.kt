@@ -33,9 +33,6 @@ import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.graphics.ColorUtils
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import bzh.zelyon.listdetail.BuildConfig
 import bzh.zelyon.listdetail.R
 import bzh.zelyon.listdetail.model.Character
@@ -53,6 +50,7 @@ import java.io.FileOutputStream
 import java.net.URL
 
 internal fun isNougat() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+
 internal fun isOreo() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
 
 internal fun List<Character>.share(mainActivity: MainActivity) {
@@ -103,12 +101,6 @@ internal fun List<Character>.share(mainActivity: MainActivity) {
                 }
             })
     }, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-}
-
-internal fun RecyclerView.init(nbColumns: Int = 1) {
-    setHasFixedSize(false)
-    isNestedScrollingEnabled = false
-    layoutManager = if (nbColumns == 1) LinearLayoutManager(context) else GridLayoutManager(context, nbColumns)
 }
 
 internal fun ImageView.setImageUrl(url: String, placeholder: Drawable? = null) {
@@ -189,8 +181,7 @@ internal fun Context.vibrate() {
     val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
     if (isOreo()) {
         vibrator.vibrate(VibrationEffect.createOneShot(1000, VibrationEffect.DEFAULT_AMPLITUDE))
-    }
-    else {
+    } else {
         vibrator.vibrate(1000)
     }
 }
@@ -254,7 +245,11 @@ internal fun Context.getLocalFileFromGalleryUri(uri: Uri): File? {
         path != null -> FileInputStream(File(path))
         Patterns.WEB_URL.matcher(uri.toString()).matches() && URLUtil.isValidUrl(uri.toString()) -> URL(uri.toString()).openStream()
         else -> contentResolver.openInputStream(uri)
-    }.use { inputStream -> FileOutputStream(outputFile).use { outputStream -> inputStream.copyTo(outputStream) }}
+    }.use { inputStream ->
+        FileOutputStream(outputFile).use { outputStream ->
+            inputStream.copyTo(outputStream)
+        }
+    }
 
     return if (outputFile.exists()) outputFile else null
 }

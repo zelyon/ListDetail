@@ -1,6 +1,5 @@
 package bzh.zelyon.listdetail.view.ui
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
@@ -12,7 +11,6 @@ import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.widget.NestedScrollView
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.PagerAdapter
 import bzh.zelyon.listdetail.R
 import bzh.zelyon.listdetail.db.DB
@@ -20,10 +18,9 @@ import bzh.zelyon.listdetail.model.Character
 import bzh.zelyon.listdetail.model.House
 import bzh.zelyon.listdetail.model.Region
 import bzh.zelyon.listdetail.util.colorResToColorInt
-import bzh.zelyon.listdetail.util.init
 import bzh.zelyon.listdetail.util.setImageUrl
 import bzh.zelyon.listdetail.util.share
-import bzh.zelyon.listdetail.view.adapter.Adapter
+import bzh.zelyon.listdetail.view.custom.ItemsView
 import bzh.zelyon.listdetail.view.custom.ViewParams
 import kotlinx.android.synthetic.main.fragment_house.*
 
@@ -31,8 +28,8 @@ class HouseFragment: AbsToolBarFragment() {
 
     companion object {
 
-        const val ID  = "ID"
-        const val PLACEHOLDER  = "PLACEHOLDER"
+        const val ID = "ID"
+        const val PLACEHOLDER = "PLACEHOLDER"
 
         fun newInstance(id: Long, placeholder: Bitmap) =
             HouseFragment().apply {
@@ -128,12 +125,31 @@ class HouseFragment: AbsToolBarFragment() {
                 }
                 1 -> {
                     house?.let {
-                        val characterAdapter = CharacterAdapter(mainActivity, R.layout.item_module)
-                        characterAdapter.items = Character.getByFilters(houses = arrayListOf(it.id))
-                        val recyclerView = RecyclerView(mainActivity)
-                        recyclerView.init(3)
-                        recyclerView.adapter = characterAdapter
-                        linearLayout.addView(recyclerView)
+                        val itemsView = ItemsView<Character>(mainActivity)
+                        itemsView.setItemsView(3, R.layout.item_module)
+                        itemsView.items = Character.getByFilters(houses = arrayListOf(it.id))
+                        itemsView.itemsListener = object : ItemsView.ItemsListener<Character> {
+                            override fun onItemFill(itemView: View, items: List<Character>, position: Int) {
+                                val character = items[position]
+                                val image = itemView.findViewById<AppCompatImageView>(R.id.image)
+                                image.transitionName = character.id.toString()
+                                image.setImageUrl(character.getThumbnail())
+                                val badge = itemView.findViewById<AppCompatImageView>(R.id.badge)
+                                badge.visibility = if (character.id == house?.lord ?: 0) View.VISIBLE else View.GONE
+                                badge.setColorFilter(mainActivity.colorResToColorInt(R.color.yellow))
+                                badge.setImageResource(R.drawable.ic_lord)
+                                itemView.findViewById<AppCompatTextView>(R.id.name).text = character.name
+                            }
+                            override fun onItemClick(itemView: View, items: List<Character>, position: Int) {
+                                val image = itemView.findViewById<AppCompatImageView>(R.id.image)
+                                mainActivity.setFragment(CharacterFragment.newInstance(items[position].id, (image.drawable as BitmapDrawable).bitmap), image)
+                            }
+                            override fun onItemLongClick(itemView: View, items: List<Character>, position: Int) {}
+                            override fun onItemStartDrag(itemView: View) {}
+                            override fun onItemEndDrag(itemView: View) {}
+                            override fun onItemsSwap(items: List<Character>) {}
+                        }
+                        linearLayout.addView(itemsView)
                     }
                 }
                 2 -> {
@@ -152,26 +168,6 @@ class HouseFragment: AbsToolBarFragment() {
             container.addView(nestedScrollView)
 
             return nestedScrollView
-        }
-    }
-
-    inner class CharacterAdapter constructor(context: Context, idItemLayout: Int) : Adapter<Character>(context, idItemLayout) {
-
-        override fun onItemFill(itemView: View, datas: List<Character>, position: Int) {
-            val character = datas[position]
-            val image = itemView.findViewById<AppCompatImageView>(R.id.image)
-            image.transitionName = character.id.toString()
-            image.setImageUrl(character.getThumbnail())
-            val badge = itemView.findViewById<AppCompatImageView>(R.id.badge)
-            badge.visibility = if (character.id == house?.lord ?: 0) View.VISIBLE else View.GONE
-            badge.setColorFilter(mainActivity.colorResToColorInt(R.color.yellow))
-            badge.setImageResource(R.drawable.ic_lord)
-            itemView.findViewById<AppCompatTextView>(R.id.name).text = character.name
-        }
-
-        override fun onItemClick(itemView: View, datas: List<Character>, position: Int) {
-            val image = itemView.findViewById<AppCompatImageView>(R.id.image)
-            mainActivity.setFragment(CharacterFragment.newInstance(datas[position].id, (image.drawable as BitmapDrawable).bitmap), image)
         }
     }
 }

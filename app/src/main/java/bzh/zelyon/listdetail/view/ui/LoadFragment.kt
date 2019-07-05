@@ -17,13 +17,14 @@ class LoadFragment: AbsFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        animatedVectorDrawableCompat = AnimatedVectorDrawableCompat.create(mainActivity, R.drawable.anim_vector_loader)
-        animatedVectorDrawableCompat?.registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
-            override fun onAnimationEnd(drawable: Drawable?) {
-                super.onAnimationEnd(drawable)
-                animatedVectorDrawableCompat?.start()
-            }
-        })
+        animatedVectorDrawableCompat = AnimatedVectorDrawableCompat.create(mainActivity, R.drawable.anim_vector_loader)?.apply {
+            registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
+                override fun onAnimationEnd(drawable: Drawable?) {
+                    super.onAnimationEnd(drawable)
+                    start()
+                }
+            })
+        }
         loader.setImageDrawable(animatedVectorDrawableCompat)
         progress_bar.progress = 0
     }
@@ -38,7 +39,7 @@ class LoadFragment: AbsFragment() {
 
     fun loadImages() {
         val characters = DB.getCharacterDao().getAll()
-        val houses  = DB.getHouseDao().getAll()
+        val houses = DB.getHouseDao().getAll()
         val regions = DB.getRegionDao().getAll()
         if (characters.isNotEmpty() && houses.isNotEmpty() && regions.isNotEmpty()) {
             animatedVectorDrawableCompat?.start()
