@@ -47,6 +47,7 @@ import io.reactivex.schedulers.Schedulers
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.io.OutputStream
 import java.net.URL
 
 internal fun isNougat() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
@@ -76,7 +77,7 @@ internal fun List<Character>.share(mainActivity: MainActivity) {
                     names.add(character.name)
                     val file = File(mainActivity.externalCacheDir, Uri.parse(character.getPicture()).lastPathSegment)
                     if (!file.exists()) {
-                        Picasso.get().load(character.getPicture()).placeholder(GradientDrawable()).get().compress(Bitmap.CompressFormat.PNG, 100, FileOutputStream(file))
+                        Picasso.get().load(character.getPicture()).placeholder(GradientDrawable()).get().compress(Bitmap.CompressFormat.PNG, 100, FileOutputStream(file) as OutputStream)
                     }
                     uris.add(if (isNougat()) FileProvider.getUriForFile(mainActivity.applicationContext, mainActivity.applicationContext.packageName, file) else Uri.fromFile(file))
                 }

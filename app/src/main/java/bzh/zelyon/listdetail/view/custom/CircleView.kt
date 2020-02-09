@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Path
 import android.util.AttributeSet
 import android.widget.FrameLayout
+import kotlin.math.min
 
 class CircleView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0): FrameLayout(context, attrs, defStyleAttr) {
 
@@ -27,7 +28,7 @@ class CircleView @JvmOverloads constructor(context: Context, attrs: AttributeSet
         val centerY = measuredHeight/2f
         path.reset()
         path.moveTo(centerX, centerY)
-        path.addCircle(centerX, centerY, Math.min(width/2f, height/2f) - 10f, Path.Direction.CW)
+        path.addCircle(centerX, centerY, min(width/2f, height/2f) - 10f, Path.Direction.CW)
         path.close()
         setMeasuredDimension(width, height)
         invalidate()

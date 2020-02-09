@@ -106,7 +106,7 @@ class MainFragment: AbsToolBarFragment() {
                 itemView.animate().scaleY(1f).scaleX(1f).alpha(1f).duration = 200L
             }
             override fun onItemsSwap(items: List<Character>) {
-                for (i in 0 until items.size) {
+                for (i in items.indices) {
                     items[i].position = i.toLong()
                 }
                 DB.getCharacterDao().update(items)
