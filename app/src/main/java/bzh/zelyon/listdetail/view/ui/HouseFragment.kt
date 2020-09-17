@@ -12,16 +12,18 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.widget.NestedScrollView
 import androidx.viewpager.widget.PagerAdapter
+import bzh.zelyon.lib.extension.colorResToColorInt
+import bzh.zelyon.lib.extension.showFragment
+import bzh.zelyon.lib.ui.component.CollectionsView
+import bzh.zelyon.lib.ui.component.ViewParams
+import bzh.zelyon.lib.ui.view.fragment.AbsToolBarFragment
 import bzh.zelyon.listdetail.R
 import bzh.zelyon.listdetail.db.DB
 import bzh.zelyon.listdetail.model.Character
 import bzh.zelyon.listdetail.model.House
 import bzh.zelyon.listdetail.model.Region
-import bzh.zelyon.listdetail.util.colorResToColorInt
 import bzh.zelyon.listdetail.util.setImageUrl
 import bzh.zelyon.listdetail.util.share
-import bzh.zelyon.listdetail.view.custom.ItemsView
-import bzh.zelyon.listdetail.view.custom.ViewParams
 import kotlinx.android.synthetic.main.fragment_house.*
 
 class HouseFragment: AbsToolBarFragment() {
@@ -47,8 +49,8 @@ class HouseFragment: AbsToolBarFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        sharedElementEnterTransition = TransitionInflater.from(mainActivity).inflateTransition(R.transition.enter_transition)
-        exitTransition = TransitionInflater.from(mainActivity).inflateTransition(R.transition.exit_transition)
+        sharedElementEnterTransition = TransitionInflater.from(absActivity).inflateTransition(R.transition.enter_transition)
+        exitTransition = TransitionInflater.from(absActivity).inflateTransition(R.transition.exit_transition)
         postponeEnterTransition()
         startPostponedEnterTransition()
 
@@ -63,26 +65,28 @@ class HouseFragment: AbsToolBarFragment() {
         super.onViewCreated(view, savedInstanceState)
         house?.let {
             image.transitionName = it.id.toString()
-            image.setImageUrl(it.getImage(), if (placeholder != null) BitmapDrawable(mainActivity.resources, placeholder) else null)
+            image.setImageUrl(it.getImage(), if (placeholder != null) BitmapDrawable(absActivity.resources, placeholder) else null)
             view_pager.adapter = PageAdapter()
             view_pager.offscreenPageLimit = Int.MAX_VALUE
             tab_layout.setupWithViewPager(view_pager)
         }
     }
 
-    override fun getLayoutId() = R.layout.fragment_house
+    override fun getIdLayout() = R.layout.fragment_house
 
     override fun onIdClick(id: Int) {
         when(id) {
-            R.id.share -> house?.let { Character.getByFilters(houses = arrayListOf(it.id)).share(mainActivity) }
+            R.id.share -> house?.let { Character.getByFilters(houses = arrayListOf(it.id)).share(absActivity) }
         }
     }
 
-    override fun getTitle() = house?.label ?: ""
+    override fun getTitleToolBar() = house?.label ?: ""
 
     override fun showBack() = true
 
     override fun getIdMenu() = R.menu.character
+
+    override fun getIdToolbar() = R.id.toolbar
 
     inner class PageAdapter : PagerAdapter() {
 
@@ -98,70 +102,73 @@ class HouseFragment: AbsToolBarFragment() {
         override fun getPageTitle(position: Int) = getString(if (position == 0) R.string.fragment_house_tab_infos else if (position == 1) R.string.fragment_house_tab_characters else R.string.fragment_house_tab_region)
 
         override fun instantiateItem(container: ViewGroup, position: Int): View {
-            val linearLayout = LinearLayout(mainActivity)
+            val linearLayout = LinearLayout(absActivity)
             linearLayout.orientation = LinearLayout.VERTICAL
-            val nestedScrollView = NestedScrollView(mainActivity)
-            nestedScrollView.addView(linearLayout, ViewParams(mainActivity, ViewParams.MATCH, ViewParams.MATCH).linear())
+            val nestedScrollView = NestedScrollView(absActivity)
+            nestedScrollView.addView(linearLayout, ViewParams(absActivity, ViewParams.MATCH, ViewParams.MATCH).linear())
             when (position) {
                 0 -> {
                     house?.let {
-                        val wrecked = AppCompatTextView(mainActivity)
+                        val wrecked = AppCompatTextView(absActivity)
                         wrecked.text = getString(R.string.fragment_house_wrecked)
                         wrecked.visibility = if (it.wrecked) View.VISIBLE else View.GONE
-                        linearLayout.addView(wrecked, ViewParams(mainActivity).margins(8).linear())
-                        val city = AppCompatTextView(mainActivity)
+                        linearLayout.addView(wrecked, ViewParams(absActivity).margins(8).linear())
+                        val city = AppCompatTextView(absActivity)
                         city.text = getString(R.string.fragment_house_capital, it.city)
                         city.visibility = if (it.city.isNotBlank()) View.VISIBLE else View.GONE
-                        linearLayout.addView(city, ViewParams(mainActivity).margins(8).linear())
-                        val devise = AppCompatTextView(mainActivity)
+                        linearLayout.addView(city, ViewParams(absActivity).margins(8).linear())
+                        val devise = AppCompatTextView(absActivity)
                         devise.text = getString(R.string.fragment_house_devise, it.devise)
                         devise.visibility = if (it.devise.isNotBlank()) View.VISIBLE else View.GONE
-                        linearLayout.addView(devise, ViewParams(mainActivity).margins(8).linear())
-                        val proverb = AppCompatTextView(mainActivity)
+                        linearLayout.addView(devise, ViewParams(absActivity).margins(8).linear())
+                        val proverb = AppCompatTextView(absActivity)
                         proverb.text = getString(R.string.fragment_house_proverb, it.proverb)
                         proverb.visibility = if (it.proverb != null) View.VISIBLE else View.GONE
-                        linearLayout.addView(proverb, ViewParams(mainActivity).margins(8).linear())
+                        linearLayout.addView(proverb, ViewParams(absActivity).margins(8).linear())
                     }
                 }
                 1 -> {
                     house?.let {
-                        val itemsView = ItemsView<Character>(mainActivity)
-                        itemsView.setItemsView(3, R.layout.item_module)
-                        itemsView.items = Character.getByFilters(houses = arrayListOf(it.id))
-                        itemsView.itemsListener = object : ItemsView.ItemsListener<Character> {
-                            override fun onItemFill(itemView: View, items: List<Character>, position: Int) {
+                        val itemsView = CollectionsView(absActivity)
+                        itemsView.nbColumns = 3
+                        itemsView.idLayoutItem = R.layout.item_module
+                        itemsView.items = Character.getByFilters(houses = arrayListOf(it.id)).toMutableList()
+                        itemsView.helper = object : CollectionsView.Helper() {
+                            override fun onBindItem(itemView: View, items: MutableList<*>, position: Int) {
                                 val character = items[position]
-                                val image = itemView.findViewById<AppCompatImageView>(R.id.image)
-                                image.transitionName = character.id.toString()
-                                image.setImageUrl(character.getThumbnail())
-                                val badge = itemView.findViewById<AppCompatImageView>(R.id.badge)
-                                badge.visibility = if (character.id == house?.lord ?: 0) View.VISIBLE else View.GONE
-                                badge.setColorFilter(mainActivity.colorResToColorInt(R.color.yellow))
-                                badge.setImageResource(R.drawable.ic_lord)
-                                itemView.findViewById<AppCompatTextView>(R.id.name).text = character.name
+                                if (character is Character) {
+                                    val image = itemView.findViewById<AppCompatImageView>(R.id.image)
+                                    image.transitionName = character.id.toString()
+                                    image.setImageUrl(character.getThumbnail())
+                                    val badge = itemView.findViewById<AppCompatImageView>(R.id.badge)
+                                    badge.visibility = if (character.id == house?.lord ?: 0) View.VISIBLE else View.GONE
+                                    badge.setColorFilter(absActivity.colorResToColorInt(R.color.yellow))
+                                    badge.setImageResource(R.drawable.ic_lord)
+                                    itemView.findViewById<AppCompatTextView>(R.id.name).text = character.name
+                                }
                             }
-                            override fun onItemClick(itemView: View, items: List<Character>, position: Int) {
-                                val image = itemView.findViewById<AppCompatImageView>(R.id.image)
-                                mainActivity.setFragment(CharacterFragment.newInstance(items[position].id, (image.drawable as BitmapDrawable).bitmap), image)
+
+                            override fun onItemClick(itemView: View, items: MutableList<*>, position: Int) {
+                                val character = items[position]
+                                if (character is Character) {
+                                    val image = itemView.findViewById<AppCompatImageView>(R.id.image)
+                                    absActivity.showFragment(CharacterFragment.newInstance(character.id, (image.drawable as BitmapDrawable).bitmap), transitionView =  image)
+                                }
                             }
-                            override fun onItemLongClick(itemView: View, items: List<Character>, position: Int) {}
-                            override fun onItemStartDrag(itemView: View) {}
-                            override fun onItemEndDrag(itemView: View) {}
-                            override fun onItemsSwap(items: List<Character>) {}
                         }
                         linearLayout.addView(itemsView)
                     }
                 }
                 2 -> {
                     region?.let {
-                        val regionName = AppCompatTextView(mainActivity)
+                        val regionName = AppCompatTextView(absActivity)
                         regionName.text = it.label
                         regionName.textSize = 16f
                         regionName.gravity = Gravity.CENTER
-                        linearLayout.addView(regionName, ViewParams(mainActivity).margins(8).centerGravity().linear())
-                        val map = AppCompatImageView(mainActivity)
+                        linearLayout.addView(regionName, ViewParams(absActivity).margins(8).centerGravity().linear())
+                        val map = AppCompatImageView(absActivity)
                         map.setImageUrl(it.getMap())
-                        linearLayout.addView(map, ViewParams(mainActivity, ViewParams.MATCH, ViewParams.MATCH).linear())
+                        linearLayout.addView(map, ViewParams(absActivity, ViewParams.MATCH, ViewParams.MATCH).linear())
                     }
                 }
             }

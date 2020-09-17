@@ -1,4 +1,4 @@
-<bzh.zelyon.listdetail.view.custom.SquareView
+<bzh.zelyon.lib.ui.component.SquareView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -45,4 +45,4 @@
 
     </RelativeLayout>
 
-</bzh.zelyon.listdetail.view.custom.SquareView>
+</bzh.zelyon.lib.ui.component.SquareView>

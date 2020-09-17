@@ -4,6 +4,8 @@ import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.view.View
+import bzh.zelyon.lib.extension.showFragment
+import bzh.zelyon.lib.ui.view.fragment.AbsToolBarFragment
 import bzh.zelyon.listdetail.R
 import bzh.zelyon.listdetail.db.DB
 import bzh.zelyon.listdetail.model.Character
@@ -35,8 +37,8 @@ class CharacterFragment: AbsToolBarFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        sharedElementEnterTransition = android.transition.TransitionInflater.from(mainActivity).inflateTransition(R.transition.enter_transition)
-        exitTransition = android.transition.TransitionInflater.from(mainActivity).inflateTransition(R.transition.exit_transition)
+        sharedElementEnterTransition = android.transition.TransitionInflater.from(absActivity).inflateTransition(R.transition.enter_transition)
+        exitTransition = android.transition.TransitionInflater.from(absActivity).inflateTransition(R.transition.exit_transition)
         postponeEnterTransition()
         startPostponedEnterTransition()
 
@@ -51,7 +53,7 @@ class CharacterFragment: AbsToolBarFragment() {
         super.onViewCreated(view, savedInstanceState)
         character?.let {
             image.transitionName = it.id.toString()
-            image.setImageUrl(it.getPicture(), if (placeholder != null) BitmapDrawable(mainActivity.resources, placeholder) else null)
+            image.setImageUrl(it.getPicture(), if (placeholder != null) BitmapDrawable(absActivity.resources, placeholder) else null)
             description.visibility = if (it.description.isNotBlank()) View.VISIBLE else View.GONE
             description.text = it.description
             gender_icon.setImageResource(if (it.man) R.drawable.ic_male else R.drawable.ic_female)
@@ -67,18 +69,19 @@ class CharacterFragment: AbsToolBarFragment() {
         }
     }
 
-    override fun getLayoutId() = R.layout.fragment_character
-
     override fun onIdClick(id: Int) {
         when(id) {
-            R.id.share -> character?.let { arrayListOf(it).share(mainActivity) }
-            R.id.house_layout -> house?.let { mainActivity.setFragment(HouseFragment.newInstance(it.id, (house_icon.drawable as BitmapDrawable).bitmap), house_icon) }
+            R.id.share -> character?.let { arrayListOf(it).share(absActivity) }
+            R.id.house_layout -> house?.let { absActivity.showFragment(HouseFragment.newInstance(it.id, (house_icon.drawable as BitmapDrawable).bitmap), transitionView =  house_icon) }
         }
     }
 
-    override fun getTitle() = character?.name ?: ""
+    override fun getTitleToolBar()= character?.name ?: ""
 
     override fun showBack() = true
 
+    override fun getIdLayout() = R.layout.fragment_character
+
     override fun getIdMenu() = R.menu.character
+    override fun getIdToolbar() = R.id.toolbar
 }

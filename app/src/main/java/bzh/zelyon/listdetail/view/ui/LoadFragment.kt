@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.view.View
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
+import bzh.zelyon.lib.extension.showFragment
+import bzh.zelyon.lib.ui.view.fragment.AbsFragment
 import bzh.zelyon.listdetail.R
 import bzh.zelyon.listdetail.db.DB
 import bzh.zelyon.listdetail.util.loadImageUrl
@@ -17,7 +19,7 @@ class LoadFragment: AbsFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        animatedVectorDrawableCompat = AnimatedVectorDrawableCompat.create(mainActivity, R.drawable.anim_vector_loader)?.apply {
+        animatedVectorDrawableCompat = AnimatedVectorDrawableCompat.create(absActivity, R.drawable.anim_vector_loader)?.apply {
             registerAnimationCallback(object : Animatable2Compat.AnimationCallback() {
                 override fun onAnimationEnd(drawable: Drawable?) {
                     super.onAnimationEnd(drawable)
@@ -29,11 +31,11 @@ class LoadFragment: AbsFragment() {
         progress_bar.progress = 0
     }
 
-    override fun getLayoutId() = R.layout.fragment_load
+    override fun getIdLayout() = R.layout.fragment_load
 
     override fun onIdClick(id: Int) {
         when(id) {
-            R.id.skip -> mainActivity.setFragment(MainFragment())
+            R.id.skip -> absActivity.showFragment(MainFragment())
         }
     }
 
@@ -63,10 +65,10 @@ class LoadFragment: AbsFragment() {
                 imageUrl.loadImageUrl(Runnable {
                     semaphore.release()
                     if (isAdded) {
-                        mainActivity.runOnUiThread {
+                        absActivity.runOnUiThread {
                             progress_bar.progress++
                             if (semaphore.tryAcquire(imagesUrlsMandatory.size)) {
-                                mainActivity.setFragment(MainFragment())
+                                absActivity.showFragment(MainFragment())
                             }
                         }
                     }

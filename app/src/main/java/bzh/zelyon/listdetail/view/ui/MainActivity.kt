@@ -5,34 +5,37 @@ import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkRequest
+import android.os.Build
 import android.os.Bundle
-import android.view.View
 import android.widget.FrameLayout
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import bzh.zelyon.lib.extension.isNougat
+import bzh.zelyon.lib.extension.showFragment
+import bzh.zelyon.lib.ui.view.activity.AbsActivity
 import bzh.zelyon.listdetail.R
 import bzh.zelyon.listdetail.api.API
 import bzh.zelyon.listdetail.db.DB
 import bzh.zelyon.listdetail.model.Character
 import bzh.zelyon.listdetail.model.House
 import bzh.zelyon.listdetail.model.Region
-import bzh.zelyon.listdetail.util.isNougat
 import bzh.zelyon.listdetail.view.callback.CallBack
 import com.google.android.material.snackbar.Snackbar
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AbsActivity() {
 
     private var permissionRunnable: Runnable? = null
     private val fragmentDisplayed: Fragment?
         get() = supportFragmentManager.findFragmentById(R.id.content)
 
+    override fun getLayoutId() = R.layout.activity_main
+
+    override fun getFragmentContainerId() = R.id.content
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        setContentView(R.layout.activity_main)
 
         DB.init(this)
 
@@ -49,7 +52,7 @@ class MainActivity : AppCompatActivity() {
         })
 
         if (fragmentDisplayed == null) {
-            setFragment(if (needLoadData) LoadFragment() else MainFragment())
+            showFragment(if (needLoadData) LoadFragment() else MainFragment())
         }
 
         intent?.let {
@@ -77,34 +80,6 @@ class MainActivity : AppCompatActivity() {
             permissionRunnable?.run()
             permissionRunnable = null
         }
-    }
-
-    fun checkPermissions(runnable: Runnable, vararg permissions: String) {
-
-        var allGranted = true
-
-        for (permission in permissions) {
-            if (ActivityCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) allGranted = false
-        }
-
-        if (allGranted) {
-            runnable.run()
-        } else {
-            permissionRunnable = runnable
-            ActivityCompat.requestPermissions(this, permissions, 0)
-        }
-    }
-
-    fun setFragment(fragment: Fragment, view: View? = null) {
-
-        val fragmentTransaction = supportFragmentManager.beginTransaction().replace(R.id.content, fragment)
-        fragmentDisplayed?.let {
-            fragmentTransaction.addToBackStack(fragment::class.java.simpleName)
-        }
-        view?.let {
-            fragmentTransaction.setReorderingAllowed(true).addSharedElement(view, view.transitionName)
-        }
-        fragmentTransaction.commit()
     }
 
     fun snackBar(text: String) {
@@ -170,7 +145,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun parseIntent(intent: Intent) {
         intent.data?.lastPathSegment?.toLong()?.let {
-            setFragment(CharacterFragment.newInstance(it))
+            showFragment(CharacterFragment.newInstance(it))
         }
     }
 
@@ -178,6 +153,7 @@ class MainActivity : AppCompatActivity() {
 
         private var connectivityManager: ConnectivityManager = activity.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
 
+        @RequiresApi(Build.VERSION_CODES.N)
         override fun onActive() {
             super.onActive()
 
@@ -196,10 +172,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         private val connectivityManagerCallback = object : ConnectivityManager.NetworkCallback() {
-            override fun onAvailable(network: Network?) {
+            override fun onAvailable(network: Network) {
                 postValue(true)
             }
-            override fun onLost(network: Network?) {
+            override fun onLost(network: Network) {
                 postValue(false)
             }
         }
