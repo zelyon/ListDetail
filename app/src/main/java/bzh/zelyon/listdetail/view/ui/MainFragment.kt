@@ -3,10 +3,7 @@ package bzh.zelyon.listdetail.view.ui
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.content.SharedPreferences
-import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
-import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.transition.TransitionInflater
@@ -14,20 +11,22 @@ import android.view.View
 import android.view.ViewAnimationUtils
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
-import bzh.zelyon.lib.extension.colorResToColorInt
-import bzh.zelyon.lib.extension.drawableResToDrawable
-import bzh.zelyon.lib.extension.showFragment
+import bzh.zelyon.lib.extension.*
 import bzh.zelyon.lib.ui.component.CollectionsView
 import bzh.zelyon.lib.ui.component.FilterView
 import bzh.zelyon.lib.ui.view.fragment.AbsToolBarFragment
 import bzh.zelyon.listdetail.R
 import bzh.zelyon.listdetail.db.DB
 import bzh.zelyon.listdetail.model.Character
+import bzh.zelyon.listdetail.model.House
 import bzh.zelyon.listdetail.util.getTextColorPrimary
-import bzh.zelyon.listdetail.util.setImageUrl
 import bzh.zelyon.listdetail.util.share
-import com.squareup.picasso.Picasso
-import com.squareup.picasso.Target
+import com.bumptech.glide.Glide
+import io.reactivex.Observable
+import io.reactivex.Observer
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_main.*
 import kotlin.math.sqrt
 
@@ -88,7 +87,7 @@ class MainFragment: AbsToolBarFragment() {
                     image.scaleX = if (!modeList && characterIsSelected) .8f else 1f
                     image.scaleY = if (!modeList && characterIsSelected) .8f else 1f
                     image.transitionName = character.id.toString()
-                    image.setImageUrl(character.getThumbnail())
+                    image.setImage(character.getThumbnail())
                     val badge = itemView.findViewById<AppCompatImageView>(R.id.badge)
                     badge.visibility = if (modeList && characterIsSelected || !modeList && !selectedCharacters.isEmpty()) View.VISIBLE else View.GONE
                     badge.setImageResource(if (characterIsSelected) R.drawable.ic_check else R.drawable.ic_uncheck)
@@ -206,7 +205,6 @@ class MainFragment: AbsToolBarFragment() {
                 sharedPreferences?.edit()?.putBoolean(LIST, modeList)?.apply()
                 items_view.nbColumns = if (modeList) 1 else 3
                 items_view.idLayoutItem = if (modeList) R.layout.item_list else R.layout.item_module
-                items_view.recreate()
                 onUpdateMenu()
             }
             R.id.search -> showSearchAndFilter(true)
@@ -234,23 +232,38 @@ class MainFragment: AbsToolBarFragment() {
     }
 
     fun loadHouses() {
-        val items= mutableListOf<FilterView.Item<Long>>()
-        for (house in DB.getHouseDao().getAll()) {
-            Picasso.get().load(house.getThumbnail()).placeholder(GradientDrawable()).into(object : Target {
-                override fun onBitmapLoaded(bitmap: Bitmap, from: Picasso.LoadedFrom) {
+
+        val items = mutableListOf<FilterView.Item<Long>>()
+
+        Observable.fromIterable(DB.getHouseDao().getAll())
+            .subscribeOn(AndroidSchedulers.mainThread())
+            .observeOn(Schedulers.io())
+            .subscribe(object : Observer<House> {
+
+                override fun onSubscribe(d: Disposable) {}
+
+                override fun onNext(house: House) {
                     items.add(
                         FilterView.Item(
                             house.id,
                             house.label,
-                            BitmapDrawable(resources, bitmap)
+                            BitmapDrawable(resources, Glide.with(absActivity)
+                                .asBitmap()
+                                .load(house.getThumbnail())
+                                .submit()
+                                .get())
                         )
                     )
-                    (house_filter_view as FilterView<Long>).load(items, housesApply)
                 }
-                override fun onBitmapFailed(e: Exception, errorDrawable: Drawable?) {}
-                override fun onPrepareLoad(placeHolderDrawable: Drawable) {}
+
+                override fun onError(e: Throwable) {}
+
+                override fun onComplete() {
+                    absActivity.runOnUiThread {
+                        (house_filter_view as FilterView<Long>).load(items, housesApply)
+                    }
+                }
             })
-        }
     }
 
     private fun loadOthers() {
@@ -282,6 +295,6 @@ class MainFragment: AbsToolBarFragment() {
         } else {
             selectedCharacters.clear()
         }
-        items_view.notifyDataSetChanged()
+        items_view.refresh()
     }
 }

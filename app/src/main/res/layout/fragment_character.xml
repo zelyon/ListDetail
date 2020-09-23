@@ -115,6 +115,7 @@
                     android:textSize="16sp"/>
 
                 <ImageView
+                    android:id="@+id/house_open"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_margin="8dp"

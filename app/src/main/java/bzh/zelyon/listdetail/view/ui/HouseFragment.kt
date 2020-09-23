@@ -13,6 +13,7 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.widget.NestedScrollView
 import androidx.viewpager.widget.PagerAdapter
 import bzh.zelyon.lib.extension.colorResToColorInt
+import bzh.zelyon.lib.extension.setImage
 import bzh.zelyon.lib.extension.showFragment
 import bzh.zelyon.lib.ui.component.CollectionsView
 import bzh.zelyon.lib.ui.component.ViewParams
@@ -22,8 +23,9 @@ import bzh.zelyon.listdetail.db.DB
 import bzh.zelyon.listdetail.model.Character
 import bzh.zelyon.listdetail.model.House
 import bzh.zelyon.listdetail.model.Region
-import bzh.zelyon.listdetail.util.setImageUrl
 import bzh.zelyon.listdetail.util.share
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.Target
 import kotlinx.android.synthetic.main.fragment_house.*
 
 class HouseFragment: AbsToolBarFragment() {
@@ -65,7 +67,7 @@ class HouseFragment: AbsToolBarFragment() {
         super.onViewCreated(view, savedInstanceState)
         house?.let {
             image.transitionName = it.id.toString()
-            image.setImageUrl(it.getImage(), if (placeholder != null) BitmapDrawable(absActivity.resources, placeholder) else null)
+            image.setImage(it.getImage(), if (placeholder != null) BitmapDrawable(absActivity.resources, placeholder) else null)
             view_pager.adapter = PageAdapter()
             view_pager.offscreenPageLimit = Int.MAX_VALUE
             tab_layout.setupWithViewPager(view_pager)
@@ -139,7 +141,7 @@ class HouseFragment: AbsToolBarFragment() {
                                 if (character is Character) {
                                     val image = itemView.findViewById<AppCompatImageView>(R.id.image)
                                     image.transitionName = character.id.toString()
-                                    image.setImageUrl(character.getThumbnail())
+                                    image.setImage(character.getThumbnail())
                                     val badge = itemView.findViewById<AppCompatImageView>(R.id.badge)
                                     badge.visibility = if (character.id == house?.lord ?: 0) View.VISIBLE else View.GONE
                                     badge.setColorFilter(absActivity.colorResToColorInt(R.color.yellow))
@@ -167,7 +169,7 @@ class HouseFragment: AbsToolBarFragment() {
                         regionName.gravity = Gravity.CENTER
                         linearLayout.addView(regionName, ViewParams(absActivity).margins(8).centerGravity().linear())
                         val map = AppCompatImageView(absActivity)
-                        map.setImageUrl(it.getMap())
+                        Glide.with(absActivity).load(it.getMap()).override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL).into(map)
                         linearLayout.addView(map, ViewParams(absActivity, ViewParams.MATCH, ViewParams.MATCH).linear())
                     }
                 }

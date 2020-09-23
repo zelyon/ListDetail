@@ -4,13 +4,13 @@ import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.view.View
+import bzh.zelyon.lib.extension.setImage
 import bzh.zelyon.lib.extension.showFragment
 import bzh.zelyon.lib.ui.view.fragment.AbsToolBarFragment
 import bzh.zelyon.listdetail.R
 import bzh.zelyon.listdetail.db.DB
 import bzh.zelyon.listdetail.model.Character
 import bzh.zelyon.listdetail.model.House
-import bzh.zelyon.listdetail.util.setImageUrl
 import bzh.zelyon.listdetail.util.share
 import kotlinx.android.synthetic.main.fragment_character.*
 
@@ -53,7 +53,7 @@ class CharacterFragment: AbsToolBarFragment() {
         super.onViewCreated(view, savedInstanceState)
         character?.let {
             image.transitionName = it.id.toString()
-            image.setImageUrl(it.getPicture(), if (placeholder != null) BitmapDrawable(absActivity.resources, placeholder) else null)
+            image.setImage(it.getPicture(), if (placeholder != null) BitmapDrawable(absActivity.resources, placeholder) else null)
             description.visibility = if (it.description.isNotBlank()) View.VISIBLE else View.GONE
             description.text = it.description
             gender_icon.setImageResource(if (it.man) R.drawable.ic_male else R.drawable.ic_female)
@@ -64,7 +64,7 @@ class CharacterFragment: AbsToolBarFragment() {
         house?.let {
             house_layout.visibility = View.VISIBLE
             house_icon.transitionName = it.id.toString()
-            house_icon.setImageUrl(it.getThumbnail())
+            house_icon.setImage(it.getThumbnail())
             house_label.text = it.label
         }
     }
@@ -72,7 +72,7 @@ class CharacterFragment: AbsToolBarFragment() {
     override fun onIdClick(id: Int) {
         when(id) {
             R.id.share -> character?.let { arrayListOf(it).share(absActivity) }
-            R.id.house_layout -> house?.let { absActivity.showFragment(HouseFragment.newInstance(it.id, (house_icon.drawable as BitmapDrawable).bitmap), transitionView =  house_icon) }
+            R.id.house_layout, R.id.house_icon, R.id.house_label, R.id.house_open -> house?.let { absActivity.showFragment(HouseFragment.newInstance(it.id, (house_icon.drawable as BitmapDrawable).bitmap), transitionView =  house_icon) }
         }
     }
 
@@ -83,5 +83,6 @@ class CharacterFragment: AbsToolBarFragment() {
     override fun getIdLayout() = R.layout.fragment_character
 
     override fun getIdMenu() = R.menu.character
+
     override fun getIdToolbar() = R.id.toolbar
 }

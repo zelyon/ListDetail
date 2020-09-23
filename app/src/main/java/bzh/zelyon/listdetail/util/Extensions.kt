@@ -4,11 +4,8 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
-import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.util.TypedValue
-import android.widget.ImageView
 import android.widget.ProgressBar
 import androidx.core.content.FileProvider
 import bzh.zelyon.lib.extension.dpToPx
@@ -16,8 +13,7 @@ import bzh.zelyon.lib.extension.isNougat
 import bzh.zelyon.lib.ui.component.Popup
 import bzh.zelyon.lib.ui.view.activity.AbsActivity
 import bzh.zelyon.listdetail.model.Character
-import com.squareup.picasso.Callback
-import com.squareup.picasso.Picasso
+import com.bumptech.glide.Glide
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
@@ -49,7 +45,12 @@ internal fun List<Character>.share(absActivity: AbsActivity) {
                     names.add(character.name)
                     val file = File(absActivity.externalCacheDir, Uri.parse(character.getPicture()).lastPathSegment)
                     if (!file.exists()) {
-                        Picasso.get().load(character.getPicture()).placeholder(GradientDrawable()).get().compress(Bitmap.CompressFormat.PNG, 100, FileOutputStream(file) as OutputStream)
+                        Glide.with(absActivity)
+                            .asBitmap()
+                            .load(character.getPicture())
+                            .submit()
+                            .get()
+                            .compress(Bitmap.CompressFormat.PNG, 100, FileOutputStream(file) as OutputStream)
                     }
                     uris.add(if (isNougat()) FileProvider.getUriForFile(absActivity.applicationContext, absActivity.applicationContext.packageName, file) else Uri.fromFile(file))
                 }
@@ -74,25 +75,6 @@ internal fun List<Character>.share(absActivity: AbsActivity) {
                 }
             })
     }
-}
-
-internal fun ImageView.setImageUrl(url: String, placeholder: Drawable? = null) {
-    var requestCreator = Picasso.get().load(url)
-    placeholder?.let {
-        requestCreator = requestCreator.placeholder(placeholder)
-    }
-    requestCreator.into(this)
-}
-
-internal fun String.loadImageUrl(runnable: Runnable? = null) {
-    Picasso.get().load(this).fetch(object : Callback {
-        override fun onSuccess() {
-            runnable?.run()
-        }
-        override fun onError(e: Exception) {
-            runnable?.run()
-        }
-    })
 }
 
 //day : black, night : white

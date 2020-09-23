@@ -5,11 +5,11 @@ import android.os.Bundle
 import android.view.View
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
+import bzh.zelyon.lib.extension.loadImage
 import bzh.zelyon.lib.extension.showFragment
 import bzh.zelyon.lib.ui.view.fragment.AbsFragment
 import bzh.zelyon.listdetail.R
 import bzh.zelyon.listdetail.db.DB
-import bzh.zelyon.listdetail.util.loadImageUrl
 import kotlinx.android.synthetic.main.fragment_load.*
 import java.util.concurrent.Semaphore
 
@@ -62,7 +62,7 @@ class LoadFragment: AbsFragment() {
             progress_bar.max = imagesUrlsMandatory.size
             val semaphore = Semaphore(0)
             for (imageUrl in imagesUrlsMandatory) {
-                imageUrl.loadImageUrl(Runnable {
+                absActivity.loadImage(imageUrl) {
                     semaphore.release()
                     if (isAdded) {
                         absActivity.runOnUiThread {
@@ -72,10 +72,10 @@ class LoadFragment: AbsFragment() {
                             }
                         }
                     }
-                })
+                }
             }
             for (imageUrl in imagesUrls) {
-                imageUrl.loadImageUrl()
+                absActivity.loadImage(imageUrl)
             }
         }
     }
