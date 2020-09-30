@@ -21,7 +21,6 @@ import bzh.zelyon.listdetail.model.Character
 import bzh.zelyon.listdetail.model.House
 import bzh.zelyon.listdetail.util.getTextColorPrimary
 import bzh.zelyon.listdetail.util.share
-import com.bumptech.glide.Glide
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -89,7 +88,7 @@ class MainFragment: AbsToolBarFragment() {
                     image.transitionName = character.id.toString()
                     image.setImage(character.getThumbnail())
                     val badge = itemView.findViewById<AppCompatImageView>(R.id.badge)
-                    badge.visibility = if (modeList && characterIsSelected || !modeList && !selectedCharacters.isEmpty()) View.VISIBLE else View.GONE
+                    badge.visibility = if (modeList && characterIsSelected || !modeList && selectedCharacters.isNotEmpty()) View.VISIBLE else View.GONE
                     badge.setImageResource(if (characterIsSelected) R.drawable.ic_check else R.drawable.ic_uncheck)
                     badge.setColorFilter(absActivity.colorResToColorInt(if (characterIsSelected) R.color.green else if (modeList) R.color.black else R.color.white))
                     itemView.findViewById<AppCompatTextView>(R.id.name).text = character.name
@@ -195,8 +194,8 @@ class MainFragment: AbsToolBarFragment() {
             }
             R.id.valid -> {
                 searchApply = search_view.query.toString()
-                housesApply = (house_filter_view as FilterView<Long>).getSelectedAndApply()
-                othersApply = (other_filter_view as FilterView<String>).getSelectedAndApply()
+                housesApply = house_filter_view.getSelectedAndApply().map { it as Long }
+                othersApply = other_filter_view.getSelectedAndApply().map { it as String }
                 loadCharacters()
                 showSearchAndFilter(false)
             }
@@ -233,7 +232,7 @@ class MainFragment: AbsToolBarFragment() {
 
     fun loadHouses() {
 
-        val items = mutableListOf<FilterView.Item<Long>>()
+        val items = mutableListOf<FilterView.Item>()
 
         Observable.fromIterable(DB.getHouseDao().getAll())
             .subscribeOn(AndroidSchedulers.mainThread())
@@ -247,11 +246,7 @@ class MainFragment: AbsToolBarFragment() {
                         FilterView.Item(
                             house.id,
                             house.label,
-                            BitmapDrawable(resources, Glide.with(absActivity)
-                                .asBitmap()
-                                .load(house.getThumbnail())
-                                .submit()
-                                .get())
+                            absActivity.getImageAsDrawable(house.getThumbnail())
                         )
                     )
                 }
@@ -260,14 +255,14 @@ class MainFragment: AbsToolBarFragment() {
 
                 override fun onComplete() {
                     absActivity.runOnUiThread {
-                        (house_filter_view as FilterView<Long>).load(items, housesApply)
+                        house_filter_view.load(items, housesApply)
                     }
                 }
             })
     }
 
     private fun loadOthers() {
-        (other_filter_view as FilterView<String>).load(listOf(
+        other_filter_view.load(listOf(
             FilterView.Item(Character.GENDER_MALE, getString(R.string.fragment_character_gender_man), absActivity.drawableResToDrawable(R.drawable.ic_male, absActivity.getTextColorPrimary())),
             FilterView.Item(Character.GENDER_FEMALE, getString(R.string.fragment_character_gender_woman), absActivity.drawableResToDrawable( R.drawable.ic_female, absActivity.getTextColorPrimary())),
             FilterView.Item(Character.ALIVE, getString(R.string.fragment_character_alive_man), absActivity.drawableResToDrawable(R.drawable.ic_alive, absActivity.getTextColorPrimary())),

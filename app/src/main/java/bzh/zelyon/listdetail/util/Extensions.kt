@@ -9,11 +9,11 @@ import android.util.TypedValue
 import android.widget.ProgressBar
 import androidx.core.content.FileProvider
 import bzh.zelyon.lib.extension.dpToPx
+import bzh.zelyon.lib.extension.getImageAsBitmap
 import bzh.zelyon.lib.extension.isNougat
 import bzh.zelyon.lib.ui.component.Popup
 import bzh.zelyon.lib.ui.view.activity.AbsActivity
 import bzh.zelyon.listdetail.model.Character
-import com.bumptech.glide.Glide
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
@@ -45,12 +45,7 @@ internal fun List<Character>.share(absActivity: AbsActivity) {
                     names.add(character.name)
                     val file = File(absActivity.externalCacheDir, Uri.parse(character.getPicture()).lastPathSegment)
                     if (!file.exists()) {
-                        Glide.with(absActivity)
-                            .asBitmap()
-                            .load(character.getPicture())
-                            .submit()
-                            .get()
-                            .compress(Bitmap.CompressFormat.PNG, 100, FileOutputStream(file) as OutputStream)
+                        absActivity.getImageAsBitmap(character.getPicture()).compress(Bitmap.CompressFormat.PNG, 100, FileOutputStream(file) as OutputStream)
                     }
                     uris.add(if (isNougat()) FileProvider.getUriForFile(absActivity.applicationContext, absActivity.applicationContext.packageName, file) else Uri.fromFile(file))
                 }

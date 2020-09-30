@@ -24,8 +24,6 @@ import bzh.zelyon.listdetail.model.Character
 import bzh.zelyon.listdetail.model.House
 import bzh.zelyon.listdetail.model.Region
 import bzh.zelyon.listdetail.util.share
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.Target
 import kotlinx.android.synthetic.main.fragment_house.*
 
 class HouseFragment: AbsToolBarFragment() {
@@ -169,7 +167,7 @@ class HouseFragment: AbsToolBarFragment() {
                         regionName.gravity = Gravity.CENTER
                         linearLayout.addView(regionName, ViewParams(absActivity).margins(8).centerGravity().linear())
                         val map = AppCompatImageView(absActivity)
-                        Glide.with(absActivity).load(it.getMap()).override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL).into(map)
+                        map.setImage(it.getMap())
                         linearLayout.addView(map, ViewParams(absActivity, ViewParams.MATCH, ViewParams.MATCH).linear())
                     }
                 }

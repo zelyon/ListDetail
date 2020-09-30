@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SimpleApp</string>
+    <string name="app_name">List Detail</string>
 
     <string name="fragment_load_loading_images">Chargement des images ..</string>
     <string name="fragment_load_skip">Passer</string>
