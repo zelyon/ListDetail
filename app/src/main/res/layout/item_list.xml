@@ -11,20 +11,20 @@
         android:layout_margin="8dp">
 
         <ImageView
-            android:id="@+id/image"
+            android:id="@+id/item_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"/>
 
         <ImageView
-            android:id="@+id/badge"
+            android:id="@+id/item_badge"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
     </bzh.zelyon.lib.ui.component.CircleView>
 
     <TextView
-        android:id="@+id/name"
+        android:id="@+id/item_name"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="wrap_content"

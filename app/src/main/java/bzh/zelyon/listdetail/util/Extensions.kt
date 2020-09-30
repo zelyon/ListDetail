@@ -24,51 +24,54 @@ import java.io.OutputStream
 
 internal fun List<Character>.share(absActivity: AbsActivity) {
 
-    val padding = absActivity.dpToPx(64).toInt()
-    val progressBar = ProgressBar(absActivity)
-    progressBar.isIndeterminate = true
-    progressBar.setPadding(0, padding, 0, padding)
-    Popup(absActivity, customView = progressBar).show()
-
     absActivity.ifPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE) {
-        val names = ArrayList<String>()
-        val uris = ArrayList<Uri>()
-        Observable.fromIterable(toMutableList())
-            .subscribeOn(Schedulers.io())
-            .observeOn(Schedulers.io())
-            .subscribe(object : Observer<Character> {
+        if (it) {
 
-                override fun onSubscribe(d: Disposable) {}
+            val padding = absActivity.dpToPx(64).toInt()
+            val progressBar = ProgressBar(absActivity)
+            progressBar.isIndeterminate = true
+            progressBar.setPadding(0, padding, 0, padding)
+            Popup(absActivity, customView = progressBar).show()
 
-                override fun onNext(character: Character) {
+            val names = ArrayList<String>()
+            val uris = ArrayList<Uri>()
+            Observable.fromIterable(toMutableList())
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .subscribe(object : Observer<Character> {
 
-                    names.add(character.name)
-                    val file = File(absActivity.externalCacheDir, Uri.parse(character.getPicture()).lastPathSegment)
-                    if (!file.exists()) {
-                        absActivity.getImageAsBitmap(character.getPicture()).compress(Bitmap.CompressFormat.PNG, 100, FileOutputStream(file) as OutputStream)
+                    override fun onSubscribe(d: Disposable) {}
+
+                    override fun onNext(character: Character) {
+
+                        names.add(character.name)
+                        val file = File(absActivity.externalCacheDir, Uri.parse(character.getPicture()).lastPathSegment)
+                        if (!file.exists()) {
+                            absActivity.getImageAsBitmap(character.getPicture()).compress(Bitmap.CompressFormat.PNG, 100, FileOutputStream(file) as OutputStream)
+                        }
+                        uris.add(if (isNougat()) FileProvider.getUriForFile(absActivity.applicationContext, absActivity.applicationContext.packageName, file) else Uri.fromFile(file))
                     }
-                    uris.add(if (isNougat()) FileProvider.getUriForFile(absActivity.applicationContext, absActivity.applicationContext.packageName, file) else Uri.fromFile(file))
-                }
 
-                override fun onError(e: Throwable) {}
+                    override fun onError(e: Throwable) {}
 
-                override fun onComplete() {
+                    override fun onComplete() {
 
-                    Popup.dismiss()
+                        Popup.dismiss()
 
-                    absActivity.startActivity(
-                        Intent.createChooser(
-                            Intent()
-                                .setAction(Intent.ACTION_SEND_MULTIPLE)
-                                .putExtra(Intent.EXTRA_TEXT, names.joinToString(separator = "\n"))
-                                .putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris)
-                                .setType("image/png")
-                                .setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION),
-                            ""
+                        absActivity.startActivity(
+                            Intent.createChooser(
+                                Intent()
+                                    .setAction(Intent.ACTION_SEND_MULTIPLE)
+                                    .putExtra(Intent.EXTRA_TEXT, names.joinToString(separator = "\n"))
+                                    .putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris)
+                                    .setType("image/png")
+                                    .setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION),
+                                ""
+                            )
                         )
-                    )
-                }
-            })
+                    }
+                })
+        }
     }
 }
 

@@ -1,7 +1,6 @@
 package bzh.zelyon.listdetail.view.ui
 
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkRequest
@@ -9,9 +8,9 @@ import android.os.Build
 import android.os.Bundle
 import android.widget.FrameLayout
 import androidx.annotation.RequiresApi
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import bzh.zelyon.lib.extension.getCurrentFragment
 import bzh.zelyon.lib.extension.isNougat
 import bzh.zelyon.lib.extension.showFragment
 import bzh.zelyon.lib.ui.view.activity.AbsActivity
@@ -26,13 +25,9 @@ import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AbsActivity() {
 
-    private var permissionRunnable: Runnable? = null
-    private val fragmentDisplayed: Fragment?
-        get() = supportFragmentManager.findFragmentById(R.id.content)
-
     override fun getLayoutId() = R.layout.activity_main
 
-    override fun getFragmentContainerId() = R.id.content
+    override fun getFragmentContainerId() = R.id.activity_main_content
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,35 +46,7 @@ class MainActivity : AbsActivity() {
             }
         })
 
-        if (fragmentDisplayed == null) {
-            showFragment(if (needLoadData) LoadFragment() else MainFragment())
-        }
-
-        intent?.let {
-            parseIntent(it)
-        }
-    }
-
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-        intent?.let {
-            parseIntent(it)
-        }
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        var allGranted = true
-
-        for (grantResult in grantResults) {
-            if (grantResult != PackageManager.PERMISSION_GRANTED) allGranted = false
-        }
-
-        if (allGranted) {
-            permissionRunnable?.run()
-            permissionRunnable = null
-        }
+        showFragment(if (needLoadData) LoadFragment() else MainFragment())
     }
 
     fun snackBar(text: String) {
@@ -96,10 +63,11 @@ class MainActivity : AbsActivity() {
 
                 DB.getCharacterDao().insert(result)
 
-                if (fragmentDisplayed is LoadFragment) {
-                    (fragmentDisplayed as LoadFragment).loadImages()
-                } else if (fragmentDisplayed is MainFragment) {
-                    (fragmentDisplayed as MainFragment).loadCharacters()
+                val currentFragment = getCurrentFragment()
+                if (currentFragment is LoadFragment) {
+                    currentFragment.loadImages()
+                } else if (currentFragment is MainFragment) {
+                    currentFragment.loadCharacters()
                 }
             }
 
@@ -114,10 +82,12 @@ class MainActivity : AbsActivity() {
 
                 DB.getHouseDao().insert(result)
 
-                if (fragmentDisplayed is LoadFragment) {
-                    (fragmentDisplayed as LoadFragment).loadImages()
-                } else if (fragmentDisplayed is MainFragment) {
-                    (fragmentDisplayed as MainFragment).loadHouses()
+
+                val currentFragment = getCurrentFragment()
+                if (currentFragment is LoadFragment) {
+                    currentFragment.loadImages()
+                } else if (currentFragment is MainFragment) {
+                    currentFragment.loadCharacters()
                 }
             }
 
@@ -132,8 +102,9 @@ class MainActivity : AbsActivity() {
 
                 DB.getRegionDao().insert(result)
 
-                if (fragmentDisplayed is LoadFragment) {
-                    (fragmentDisplayed as LoadFragment).loadImages()
+                val currentFragment = getCurrentFragment()
+                if (currentFragment is LoadFragment) {
+                    currentFragment.loadImages()
                 }
             }
 
@@ -143,7 +114,8 @@ class MainActivity : AbsActivity() {
         })
     }
 
-    private fun parseIntent(intent: Intent) {
+    override fun handleIntent(intent: Intent) {
+        super.handleIntent(intent)
         intent.data?.lastPathSegment?.toLong()?.let {
             showFragment(CharacterFragment.newInstance(it))
         }

@@ -3,7 +3,6 @@ package bzh.zelyon.listdetail.view.ui
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
-import android.transition.TransitionInflater
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -48,12 +47,6 @@ class HouseFragment: AbsToolBarFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        sharedElementEnterTransition = TransitionInflater.from(absActivity).inflateTransition(R.transition.enter_transition)
-        exitTransition = TransitionInflater.from(absActivity).inflateTransition(R.transition.exit_transition)
-        postponeEnterTransition()
-        startPostponedEnterTransition()
-
         arguments?.let {
             house = DB.getHouseDao().getById(it.getLong(ID))
             placeholder = it.getParcelable(PLACEHOLDER)
@@ -64,38 +57,39 @@ class HouseFragment: AbsToolBarFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         house?.let {
-            image.transitionName = it.id.toString()
-            image.setImage(it.getImage(), if (placeholder != null) BitmapDrawable(absActivity.resources, placeholder) else null)
-            view_pager.adapter = PageAdapter()
-            view_pager.offscreenPageLimit = Int.MAX_VALUE
-            tab_layout.setupWithViewPager(view_pager)
+            fragment_house_image.transitionName = it.id.toString()
+            fragment_house_image.setImage(it.getImage(), if (placeholder != null) BitmapDrawable(absActivity.resources, placeholder) else null)
+            fragment_house_view_pager.adapter = PageAdapter()
+            fragment_house_view_pager.offscreenPageLimit = Int.MAX_VALUE
+            fragment_house_tab_layout.setupWithViewPager(fragment_house_view_pager)
         }
     }
 
     override fun getIdLayout() = R.layout.fragment_house
 
     override fun onIdClick(id: Int) {
+        super.onIdClick(id)
         when(id) {
             R.id.share -> house?.let { Character.getByFilters(houses = arrayListOf(it.id)).share(absActivity) }
         }
     }
 
-    override fun getTitleToolBar() = house?.label ?: ""
+    override fun getTitleToolBar() = house?.label.orEmpty()
 
     override fun showBack() = true
 
     override fun getIdMenu() = R.menu.character
 
-    override fun getIdToolbar() = R.id.toolbar
+    override fun getIdToolbar() = R.id.fragment_house_toolbar
 
     inner class PageAdapter : PagerAdapter() {
 
-        override fun isViewFromObject(view: View, `object`: Any) = view === `object`
+        override fun isViewFromObject(view: View, any: Any) = view === any
 
-        override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
-            container.removeView(`object` as View)
+        override fun destroyItem(container: ViewGroup, position: Int, any: Any) {
+            container.removeView(any as View)
         }
-        override fun getItemPosition(`object`: Any) = POSITION_NONE
+        override fun getItemPosition(any: Any) = POSITION_NONE
 
         override fun getCount() = 3
 
@@ -137,21 +131,21 @@ class HouseFragment: AbsToolBarFragment() {
                             override fun onBindItem(itemView: View, items: MutableList<*>, position: Int) {
                                 val character = items[position]
                                 if (character is Character) {
-                                    val image = itemView.findViewById<AppCompatImageView>(R.id.image)
+                                    val image = itemView.findViewById<AppCompatImageView>(R.id.item_image)
                                     image.transitionName = character.id.toString()
                                     image.setImage(character.getThumbnail())
-                                    val badge = itemView.findViewById<AppCompatImageView>(R.id.badge)
+                                    val badge = itemView.findViewById<AppCompatImageView>(R.id.item_badge)
                                     badge.visibility = if (character.id == house?.lord ?: 0) View.VISIBLE else View.GONE
                                     badge.setColorFilter(absActivity.colorResToColorInt(R.color.yellow))
                                     badge.setImageResource(R.drawable.ic_lord)
-                                    itemView.findViewById<AppCompatTextView>(R.id.name).text = character.name
+                                    itemView.findViewById<AppCompatTextView>(R.id.item_name).text = character.name
                                 }
                             }
 
                             override fun onItemClick(itemView: View, items: MutableList<*>, position: Int) {
                                 val character = items[position]
                                 if (character is Character) {
-                                    val image = itemView.findViewById<AppCompatImageView>(R.id.image)
+                                    val image = itemView.findViewById<AppCompatImageView>(R.id.item_image)
                                     absActivity.showFragment(CharacterFragment.newInstance(character.id, (image.drawable as BitmapDrawable).bitmap), transitionView =  image)
                                 }
                             }

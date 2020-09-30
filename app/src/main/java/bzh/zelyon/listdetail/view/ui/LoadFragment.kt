@@ -27,15 +27,16 @@ class LoadFragment: AbsFragment() {
                 }
             })
         }
-        loader.setImageDrawable(animatedVectorDrawableCompat)
-        progress_bar.progress = 0
+        fragment_load_loader.setImageDrawable(animatedVectorDrawableCompat)
+        fragment_load_progress_bar.progress = 0
     }
 
     override fun getIdLayout() = R.layout.fragment_load
 
     override fun onIdClick(id: Int) {
+        super.onIdClick(id)
         when(id) {
-            R.id.skip -> absActivity.showFragment(MainFragment())
+            R.id.fragment_load_skip -> absActivity.showFragment(MainFragment())
         }
     }
 
@@ -45,7 +46,7 @@ class LoadFragment: AbsFragment() {
         val regions = DB.getRegionDao().getAll()
         if (characters.isNotEmpty() && houses.isNotEmpty() && regions.isNotEmpty()) {
             animatedVectorDrawableCompat?.start()
-            skip.visibility = View.VISIBLE
+            fragment_load_skip.visibility = View.VISIBLE
             val imagesUrlsMandatory = ArrayList<String>()
             val imagesUrls = ArrayList<String>()
             for (character in characters) {
@@ -59,14 +60,14 @@ class LoadFragment: AbsFragment() {
             for (region in regions) {
                 imagesUrls.add(region.getMap())
             }
-            progress_bar.max = imagesUrlsMandatory.size
+            fragment_load_progress_bar.max = imagesUrlsMandatory.size
             val semaphore = Semaphore(0)
             for (imageUrl in imagesUrlsMandatory) {
                 absActivity.loadImage(imageUrl) {
                     semaphore.release()
                     if (isAdded) {
                         absActivity.runOnUiThread {
-                            progress_bar.progress++
+                            fragment_load_progress_bar.progress++
                             if (semaphore.tryAcquire(imagesUrlsMandatory.size)) {
                                 absActivity.showFragment(MainFragment())
                             }

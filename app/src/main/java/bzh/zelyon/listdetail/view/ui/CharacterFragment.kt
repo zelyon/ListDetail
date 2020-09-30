@@ -5,7 +5,6 @@ import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.view.View
 import bzh.zelyon.lib.extension.setImage
-import bzh.zelyon.lib.extension.showFragment
 import bzh.zelyon.lib.ui.view.fragment.AbsToolBarFragment
 import bzh.zelyon.listdetail.R
 import bzh.zelyon.listdetail.db.DB
@@ -36,12 +35,6 @@ class CharacterFragment: AbsToolBarFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        sharedElementEnterTransition = android.transition.TransitionInflater.from(absActivity).inflateTransition(R.transition.enter_transition)
-        exitTransition = android.transition.TransitionInflater.from(absActivity).inflateTransition(R.transition.exit_transition)
-        postponeEnterTransition()
-        startPostponedEnterTransition()
-
         arguments?.let {
             character = DB.getCharacterDao().getById(it.getLong(ID))
             placeholder = it.getParcelable(PLACEHOLDER)
@@ -52,31 +45,32 @@ class CharacterFragment: AbsToolBarFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         character?.let {
-            image.transitionName = it.id.toString()
-            image.setImage(it.getPicture(), if (placeholder != null) BitmapDrawable(absActivity.resources, placeholder) else null)
-            description.visibility = if (it.description.isNotBlank()) View.VISIBLE else View.GONE
-            description.text = it.description
-            gender_icon.setImageResource(if (it.man) R.drawable.ic_male else R.drawable.ic_female)
-            gender_label.text = getString(if (it.man) R.string.fragment_character_gender_man else R.string.fragment_character_gender_woman)
-            status_icon.setImageResource(if (it.dead) R.drawable.ic_dead else R.drawable.ic_alive)
-            status_label.text = getString(if (it.dead) if (it.man) R.string.fragment_character_dead_man else R.string.fragment_character_dead_woman else if (it.man) R.string.fragment_character_alive_man else R.string.fragment_character_alive_woman)
+            fragment_character_image.transitionName = it.id.toString()
+            fragment_character_image.setImage(it.getPicture(), if (placeholder != null) BitmapDrawable(absActivity.resources, placeholder) else null)
+            fragment_character_description.visibility = if (it.description.isNotBlank()) View.VISIBLE else View.GONE
+            fragment_character_description.text = it.description
+            fragment_character_gender_icon.setImageResource(if (it.man) R.drawable.ic_male else R.drawable.ic_female)
+            fragment_character_gender_label.text = getString(if (it.man) R.string.fragment_character_gender_man else R.string.fragment_character_gender_woman)
+            fragment_character_status_icon.setImageResource(if (it.dead) R.drawable.ic_dead else R.drawable.ic_alive)
+            fragment_character_status_label.text = getString(if (it.dead) if (it.man) R.string.fragment_character_dead_man else R.string.fragment_character_dead_woman else if (it.man) R.string.fragment_character_alive_man else R.string.fragment_character_alive_woman)
         }
         house?.let {
-            house_layout.visibility = View.VISIBLE
-            house_icon.transitionName = it.id.toString()
-            house_icon.setImage(it.getThumbnail())
-            house_label.text = it.label
+            fragment_character_house_layout.visibility = View.VISIBLE
+            fragment_character_house_icon.transitionName = it.id.toString()
+            fragment_character_house_icon.setImage(it.getThumbnail())
+            fragment_character_house_label.text = it.label
         }
     }
 
     override fun onIdClick(id: Int) {
+        super.onIdClick(id)
         when(id) {
             R.id.share -> character?.let { arrayListOf(it).share(absActivity) }
-            R.id.house_layout, R.id.house_icon, R.id.house_label, R.id.house_open -> house?.let { absActivity.showFragment(HouseFragment.newInstance(it.id, (house_icon.drawable as BitmapDrawable).bitmap), transitionView =  house_icon) }
+            R.id.fragment_character_house_layout, R.id.fragment_character_house_icon, R.id.fragment_character_house_label, R.id.fragment_character_house_open -> house?.let { showFragment(HouseFragment.newInstance(it.id, (fragment_character_house_icon.drawable as BitmapDrawable).bitmap), transitionView =  fragment_character_house_icon) }
         }
     }
 
-    override fun getTitleToolBar()= character?.name ?: ""
+    override fun getTitleToolBar()= character?.name.orEmpty()
 
     override fun showBack() = true
 
@@ -84,5 +78,5 @@ class CharacterFragment: AbsToolBarFragment() {
 
     override fun getIdMenu() = R.menu.character
 
-    override fun getIdToolbar() = R.id.toolbar
+    override fun getIdToolbar() = R.id.fragment_character_toolbar
 }

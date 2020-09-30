@@ -11,13 +11,13 @@
         android:layout_height="match_parent">
 
         <ImageView
-            android:id="@+id/image"
+            android:id="@+id/item_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"/>
 
         <ImageView
-            android:id="@+id/badge"
+            android:id="@+id/item_badge"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_alignParentLeft="true"
@@ -26,14 +26,14 @@
         <View
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/name"
+                android:layout_alignTop="@+id/item_name"
                 android:layout_alignParentBottom="true"
                 android:layout_centerInParent="true"
                 android:background="?attr/colorSurface"
                 android:alpha="0.6"/>
 
         <TextView
-                android:id="@+id/name"
+                android:id="@+id/item_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="4dp"
