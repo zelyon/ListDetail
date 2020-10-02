@@ -36,7 +36,7 @@ class LoadFragment: AbsFragment() {
     override fun onIdClick(id: Int) {
         super.onIdClick(id)
         when(id) {
-            R.id.fragment_load_skip -> absActivity.showFragment(MainFragment())
+            R.id.fragment_load_skip -> showFragment(MainFragment(), false)
         }
     }
 
@@ -69,7 +69,7 @@ class LoadFragment: AbsFragment() {
                         absActivity.runOnUiThread {
                             fragment_load_progress_bar.progress++
                             if (semaphore.tryAcquire(imagesUrlsMandatory.size)) {
-                                absActivity.showFragment(MainFragment())
+                                showFragment(MainFragment(), false)
                             }
                         }
                     }
