@@ -5,14 +5,16 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Build
 import android.util.TypedValue
 import android.widget.ProgressBar
 import androidx.core.content.FileProvider
 import bzh.zelyon.lib.extension.dpToPx
 import bzh.zelyon.lib.extension.getImageAsBitmap
-import bzh.zelyon.lib.extension.isNougat
 import bzh.zelyon.lib.ui.component.Popup
 import bzh.zelyon.lib.ui.view.activity.AbsActivity
+import bzh.zelyon.lib.util.Launch
+import bzh.zelyon.listdetail.BuildConfig
 import bzh.zelyon.listdetail.model.Character
 import io.reactivex.Observable
 import io.reactivex.Observer
@@ -23,10 +25,8 @@ import java.io.FileOutputStream
 import java.io.OutputStream
 
 internal fun List<Character>.share(absActivity: AbsActivity) {
-
-    absActivity.ifPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE) {
+    absActivity.launchPermissionFiles(BuildConfig.APPLICATION_ID) {
         if (it) {
-
             val padding = absActivity.dpToPx(64).toInt()
             val progressBar = ProgressBar(absActivity)
             progressBar.isIndeterminate = true
@@ -49,7 +49,7 @@ internal fun List<Character>.share(absActivity: AbsActivity) {
                         if (!file.exists()) {
                             absActivity.getImageAsBitmap(character.getPicture()).compress(Bitmap.CompressFormat.PNG, 100, FileOutputStream(file) as OutputStream)
                         }
-                        uris.add(if (isNougat()) FileProvider.getUriForFile(absActivity.applicationContext, absActivity.applicationContext.packageName, file) else Uri.fromFile(file))
+                        uris.add(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) FileProvider.getUriForFile(absActivity.applicationContext, absActivity.applicationContext.packageName, file) else Uri.fromFile(file))
                     }
 
                     override fun onError(e: Throwable) {}

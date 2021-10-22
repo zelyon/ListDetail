@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.view.View
+import bzh.zelyon.lib.extension.actionFragment
 import bzh.zelyon.lib.extension.setImage
 import bzh.zelyon.lib.ui.view.fragment.AbsToolBarFragment
 import bzh.zelyon.listdetail.R
@@ -66,7 +67,7 @@ class CharacterFragment: AbsToolBarFragment() {
         super.onIdClick(id)
         when(id) {
             R.id.share -> character?.let { arrayListOf(it).share(absActivity) }
-            R.id.fragment_character_house_layout, R.id.fragment_character_house_icon, R.id.fragment_character_house_label, R.id.fragment_character_house_open -> house?.let { showFragment(HouseFragment.newInstance(it.id, (fragment_character_house_icon.drawable as BitmapDrawable).bitmap), transitionView =  fragment_character_house_icon) }
+            R.id.fragment_character_house_layout, R.id.fragment_character_house_icon, R.id.fragment_character_house_label, R.id.fragment_character_house_open -> house?.let { absActivity.actionFragment(HouseFragment.newInstance(it.id, (fragment_character_house_icon.drawable as BitmapDrawable).bitmap), transitionView =  fragment_character_house_icon) }
         }
     }
 

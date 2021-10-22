@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
+import bzh.zelyon.lib.extension.actionFragment
 import bzh.zelyon.lib.extension.loadImage
 import bzh.zelyon.lib.extension.showFragment
 import bzh.zelyon.lib.ui.view.fragment.AbsFragment
@@ -36,7 +37,7 @@ class LoadFragment: AbsFragment() {
     override fun onIdClick(id: Int) {
         super.onIdClick(id)
         when(id) {
-            R.id.fragment_load_skip -> showFragment(MainFragment(), false)
+            R.id.fragment_load_skip -> absActivity.actionFragment(MainFragment(), addToBackStack = false)
         }
     }
 
@@ -69,7 +70,7 @@ class LoadFragment: AbsFragment() {
                         absActivity.runOnUiThread {
                             fragment_load_progress_bar.progress++
                             if (semaphore.tryAcquire(imagesUrlsMandatory.size)) {
-                                showFragment(MainFragment(), false)
+                                absActivity.actionFragment(MainFragment(), addToBackStack = false)
                             }
                         }
                     }

@@ -10,8 +10,8 @@ import android.widget.FrameLayout
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import bzh.zelyon.lib.extension.actionFragment
 import bzh.zelyon.lib.extension.getCurrentFragment
-import bzh.zelyon.lib.extension.isNougat
 import bzh.zelyon.lib.extension.showFragment
 import bzh.zelyon.lib.ui.view.activity.AbsActivity
 import bzh.zelyon.listdetail.R
@@ -46,7 +46,7 @@ class MainActivity : AbsActivity() {
             }
         })
 
-        showFragment(if (needLoadData) LoadFragment() else MainFragment())
+        actionFragment(if (needLoadData) LoadFragment() else MainFragment())
     }
 
     fun snackBar(text: String) {
@@ -117,7 +117,7 @@ class MainActivity : AbsActivity() {
     override fun handleIntent(intent: Intent) {
         super.handleIntent(intent)
         intent.data?.lastPathSegment?.toLong()?.let {
-            showFragment(CharacterFragment.newInstance(it))
+            actionFragment(CharacterFragment.newInstance(it))
         }
     }
 
@@ -131,7 +131,7 @@ class MainActivity : AbsActivity() {
 
             postValue(connectivityManager.activeNetworkInfo?.isConnected ?: false)
 
-            if (isNougat()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 connectivityManager.registerDefaultNetworkCallback(connectivityManagerCallback)
             } else {
                 connectivityManager.registerNetworkCallback(NetworkRequest.Builder().addTransportType(android.net.NetworkCapabilities.TRANSPORT_CELLULAR).addTransportType(android.net.NetworkCapabilities.TRANSPORT_WIFI).build(), connectivityManagerCallback)

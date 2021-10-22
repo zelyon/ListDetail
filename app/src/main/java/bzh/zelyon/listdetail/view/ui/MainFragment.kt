@@ -93,7 +93,7 @@ class MainFragment: AbsToolBarFragment() {
                 if (character is Character) {
                     if (fragment_main_action_mode_toolbar.visibility == View.GONE) {
                         val image= itemView.findViewById<AppCompatImageView>(R.id.item_image)
-                        absActivity.showFragment(CharacterFragment.newInstance(character.id, (image.drawable as BitmapDrawable).bitmap), transitionView = image)
+                        absActivity.actionFragment(CharacterFragment.newInstance(character.id, (image.drawable as BitmapDrawable).bitmap), transitionView = image)
                     } else {
                         selectCharacter(itemView, character)
                     }
@@ -284,6 +284,6 @@ class MainFragment: AbsToolBarFragment() {
         } else {
             selectedCharacters.clear()
         }
-        fragment_main_collectionview.refresh()
+        fragment_main_collectionview.refreshAll()
     }
 }

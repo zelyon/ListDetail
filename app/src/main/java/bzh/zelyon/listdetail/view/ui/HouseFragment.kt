@@ -11,6 +11,7 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.widget.NestedScrollView
 import androidx.viewpager.widget.PagerAdapter
+import bzh.zelyon.lib.extension.actionFragment
 import bzh.zelyon.lib.extension.colorResToColorInt
 import bzh.zelyon.lib.extension.setImage
 import bzh.zelyon.lib.extension.showFragment
@@ -146,7 +147,7 @@ class HouseFragment: AbsToolBarFragment() {
                                 val character = items[position]
                                 if (character is Character) {
                                     val image = itemView.findViewById<AppCompatImageView>(R.id.item_image)
-                                    absActivity.showFragment(CharacterFragment.newInstance(character.id, (image.drawable as BitmapDrawable).bitmap), transitionView =  image)
+                                    absActivity.actionFragment(CharacterFragment.newInstance(character.id, (image.drawable as BitmapDrawable).bitmap), transitionView = image)
                                 }
                             }
                         }
