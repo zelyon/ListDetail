@@ -82,15 +82,10 @@ data class Character(
         @Update
         fun update(characters: List<Character>)
 
-        @Query("SELECT * " +
-                "FROM character " +
-                "ORDER BY position, id")
+        @Query("SELECT * FROM character ORDER BY position, id")
         fun getAll(): List<Character>
 
-        @Query("SELECT * " +
-                "FROM character " +
-                "WHERE id = :id " +
-                "LIMIT 1")
+        @Query("SELECT * FROM character WHERE id = :id LIMIT 1")
         fun getById(id: Long): Character
 
         @RawQuery

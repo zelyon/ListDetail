@@ -24,14 +24,10 @@ data class Region(
         @Insert(onConflict = OnConflictStrategy.REPLACE)
         fun insert(regions: List<Region>)
 
-        @Query("SELECT * " +
-                "FROM region")
+        @Query("SELECT * FROM region")
         fun getAll(): List<Region>
 
-        @Query("SELECT * " +
-                "FROM region " +
-                "WHERE id = :id " +
-                "LIMIT 1")
+        @Query("SELECT * FROM region WHERE id = :id LIMIT 1")
         fun getById(id: Long): Region
     }
 }
